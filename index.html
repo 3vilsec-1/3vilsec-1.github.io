@@ -7,9 +7,9 @@ layout: default
   <h1 class="page-heading">Posts</h1>
 
   <ul class="post-list">
-    {% for post in site.posts %}
+    {% for post in site.posts limit:4 %}
       <li>
-        
+
 
         <h2>
           <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a><span class="post-meta"><small>{{ post.date | date: "%b %-d, %Y" }}</small></span>

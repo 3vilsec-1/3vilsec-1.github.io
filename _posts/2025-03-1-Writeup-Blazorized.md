@@ -1,6 +1,6 @@
 ---
 layout: post
-title:  "Writeup-Blazorized"
+title:  "Writeup Blazorized"
 date:   2025-03-01 
 categories: post
 ---

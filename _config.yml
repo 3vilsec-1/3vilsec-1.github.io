@@ -28,8 +28,7 @@ color-2: '#a044ff'
 
 # Build settings
 markdown: kramdown
-sass:
-    style: compressed
+
 
 #Other
 analytics: 'UA-83979019-1'

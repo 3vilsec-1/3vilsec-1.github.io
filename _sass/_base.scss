@@ -147,12 +147,9 @@ pre,
 code {
     background: black;
     font-size: 15px;
-    border: 1px solid $brand-color;
     border-radius: 3px;
-    white-space: pre-wrap;
     word-wrap: break-word;
-/**    text-shadow: 0 0 1px #777; **/
-
+    box-sizing: border-box;
 }
 
 code {
@@ -161,19 +158,35 @@ code {
 
 pre {
     padding: 8px 12px;
-    overflow-x: auto;
-    display: inline-block;
-            @include media-query($on-palm) {
-            display: block;
-    }
-    
-    
-    > code {
-        border: 0;
-        padding-right: 0;
-        padding-left: 0;
-        
+    max-height: 300px; 
+    overflow-y: auto; 
+    overflow-x: auto; 
+    white-space: pre; 
+    scrollbar-width: thin; 
+    scrollbar-color: $brand-color transparent; 
+    border: 1px solid $brand-color;
+}
 
+
+pre::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+pre::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+pre::-webkit-scrollbar-thumb {
+    background: $brand-color;
+    border-radius: 4px;
+}
+
+
+@include media-query($on-palm) {
+    pre {
+        display: block;
+        max-height: 200px;
     }
 }
 

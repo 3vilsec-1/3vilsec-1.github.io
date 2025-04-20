@@ -6,12 +6,11 @@
 # 'jekyll serve'. If you change this file, please restart the server process.
 
 # Site settings
-title: bacala0
-email: Bacalao
-description: > # this means to ignore newlines until "baseurl:"
-  Webjeda Purple is a minimal theme built on default jekyll theme. It is very light highly customizable. Suitable for minimal blogs.
-url: "Bacala0" # the base hostname & protocol for your site #footer built by link
-built-by: Bacala0 #footer button text
+title: 3vilsec
+email: 3vilsec
+
+url: "3vilsec" # the base hostname & protocol for your site #footer built by link
+built-by: 3vilsec #footer button text
 
 
 #baseurl: "/purple"
@@ -32,4 +31,4 @@ markdown: kramdown
 
 #Other
 analytics: 'UA-83979019-1'
-disqus-shortname: Bacala0    #Disqus comments
+disqus-shortname: 3vilsec    #Disqus comments

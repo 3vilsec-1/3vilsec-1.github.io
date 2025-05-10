@@ -64,6 +64,7 @@
     display: block;
     line-height: 56px;
     text-align: center;
+    margin-top: 12px;
 
     .menu-icon {
         display: none;
@@ -686,3 +687,27 @@ ul.contact-ul {
     }
 }
 
+
+  /* Estilos generales de la barra */
+.search_bar {
+    top: 40px; /* Más separación del título */
+    padding: 10px ; /* Padding más amplio */
+    z-index: 500;
+    max-width: 306px;
+    display: block; /* Necesario para margin: auto */
+    margin: 10px auto;
+
+  }
+  
+  /* Estilo del input */
+.search_bar input {
+    padding: 8px 14px; /* Más padding para mejor apariencia */
+    border: none;
+    border-radius: 5px;
+    width: 300px;
+    font-size: 1em;
+    background: #fff;
+    color: #333;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  

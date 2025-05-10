@@ -21,7 +21,7 @@ Si tienes alguna pregunta, necesitas mas información sobre mis servicios o dese
             </a>
         </div>
         <div class="recuadro">
-            <a href="mailto:tu_correo@ejemplo.com" class="correo-enlace">
+            <a href="mailto:3vilsec@3vilsec.com" class="correo-enlace">
                 <svg margin="0 auto" width="70" height="70" botom="30" id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50"><defs><style>.cls-1{fill:#b578ff;}</style></defs><title>X</title><path class="cls-1" d="M39,4H11c-3.866,0-7,3.134-7,7v28c0,3.866,3.134,7,7,7h28c3.866,0,7-3.134,7-7V11C46,7.134,42.866,4,39,4z M29.978,37l-6.54-9.292L15.5,37H13l9.308-10.897L13.086,13h7.937l5.637,8.009L33.5,13H36l-8.211,9.613L37.914,37H29.978z"/></svg>           
             </a>
         </div>

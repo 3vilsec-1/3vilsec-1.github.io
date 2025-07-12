@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Writeup Dog"
-date:   2025-07-012
+date:   2025-07-12
 categories: post
 ---
 

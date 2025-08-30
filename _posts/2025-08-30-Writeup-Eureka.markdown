@@ -16,7 +16,7 @@ categories: post
 La máquina de hoy, se enfoca en la explotación de vulnerabilidades en aplicaciones Spring Boot, La enumeración identifica endpoints expuestos, que permite obtener credenciales sensibles. Estas credenciales facilitan el acceso inicial al sistema como el usuario "oscar190". Desde allí, se explota una vulnerabilidad en el servicio Eureka mediante un registro malicioso, logrando escalar privilegios a un usuario más privilegiado, "miranda". Finalmente, se establece una reverse shell para obtener acceso root, explotando configuraciones inseguras de un archivo con poca sanitizacion y aprovechando una tarea cron de ROOT.
 
 --------------------------------------------------------
-\
+
 <h3>Enumeracion</h3>
 
 primero vamos a enumerar puertos en la ip con nmap:

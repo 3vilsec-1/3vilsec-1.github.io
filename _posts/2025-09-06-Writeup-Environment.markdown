@@ -16,7 +16,7 @@ categories: post
 la maquina «Environment» es de dificultad media y abarca desde el reconocimiento inicial para identificar puertos y servicios abiertos, hasta la explotación de una vulnerabilidad web del framework Laravel para obtener acceso inicial como www-data, captura de credenciales almacenadas en un archivo .gpg para pivotar a otro usuario del sistema (hish) y la escalada de privilegios a root mediante la manipulación de variables de entorno apoyandose tambien el la ejecucion de un binario como root (systeminfo).
 
 ---------------------
-
+<h3>Recon</h3>
 primer escaneo con nmap:
 ```bash
 nmap -p- --open -sS -Pn -n -vvv --min-rate 3000 10.129.237.134 -oN puertos
@@ -93,6 +93,7 @@ if(App::environment() == "preprod") { //QOL: login directly as me in dev/local/p
 
 $user = User::where('email', $email)->first();
 ```
+<h3>cve-2024-52301</h3>
 
 y además, buscando vulnerabilidades para la versión de laravel, encontramos una, la cual tiene un nombre bastante curioso:
 <img src="/images/writeup-environment/Pasted image 20250619162249.png">
@@ -125,6 +126,8 @@ finalmente tenemos un usuario:
 <img src="/images/writeup-environment/Pasted image 20250619165338.png">
 
 y como veo la unica funcion de la pagina es para ver usuario suscritos y cambiar la foto de perfil, puede que esto sea para cargar una imagen maliciosa y lograr una shell inversa
+
+<h3>Shell como www-data</h3>
 
 luego de probar, intento subir una webshell en php:
 <img src="/images/writeup-environment/Pasted image 20250619180946.png">
@@ -329,6 +332,7 @@ despues de buscar un poco, podemos ver que, en el directorio home, existe el nom
 
 mirando en el directorio, vemos que tiene un archivo .pgp, estos son archivos que ha sido encriptados por (PGP). esta herramienta para desencriptar, usa las keys que se encuentran en un directorio .gnupg en la home del usuario que intenta abrir el mensaje, si las claves coinciden, funcionará
 
+<h3>Shell como Hish</h3>
 mirando esto, vamos a:
 
 descargar el archivo .gpg en base 64 con:
@@ -412,9 +416,12 @@ que es esto?
 al parecer es una opción o una funcionalidad de sudoesr para indicar cuales son las variables de entorno que se van a conservar después de ejecutar un comando con "sudo" siendo un usuario convencional (ya que normalmente se restablece el entorno al estado inicial) y esto indicaría cual no se cambiara 
 
 hay un articulo que nos aclara un poco mas esto, el cual si buscamos en internet, será el primero que se nos muestre, se como manipular esa variable:
+```
 https://unix.stackexchange.com/questions/590788/treatment-of-env-and-bash-env-in-bash-running-in-bash-and-sh-mode
-
+```
 lo que se nos muestra, es que si creamos un archivo, y lo metemos dentro de la variable BASH_ENV la terminal lo ejecutara dado que asumirá que es como debe quedar el entorno después del uso de sudo
+
+<h3>Shell como Root</h3>
 
 probando esto podemos crear un archivo en tmp:
 ```

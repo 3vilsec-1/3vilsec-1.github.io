@@ -270,8 +270,10 @@ mirando la data que nos llega, son credenciales completas:
 ```data
 username=miranda.wise%40furni.htb&password=IL%21veT0Be%26BeT0L0ve
 ```
-aunque esta codificada a urlencode los caracteres especiales, podemos decodificarlos con el burpsuite en el decoder o con https://gchq.github.io/CyberChef/#recipe=URL_Decode(true)&input=SUwlMjF2ZVQwQmUlMjZCZVQwTDB2ZQ
-
+aunque esta codificada a urlencode los caracteres especiales, podemos decodificarlos con el burpsuite en el decoder o con 
+```
+https://gchq.github.io/CyberChef/#recipe=URL_Decode(true)&input=SUwlMjF2ZVQwQmUlMjZCZVQwTDB2ZQ
+```
 finalmente:
 ```
 usuario: miranda.wise contrasena: IL!veT0Be&BeT0L0ve

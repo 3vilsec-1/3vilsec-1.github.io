@@ -13,6 +13,10 @@ categories: post
 
 ---------------------------------------------------------
 \
+la maquina «Environment» es de dificultad media y abarca desde el reconocimiento inicial para identificar puertos y servicios abiertos, hasta la explotación de una vulnerabilidad web del framework Laravel para obtener acceso inicial como www-data, captura de credenciales almacenadas en un archivo .gpg para pivotar a otro usuario del sistema (hish) y la escalada de privilegios a root mediante la manipulación de variables de entorno apoyandose tambien el la ejecucion de un binario como root (systeminfo).
+
+---------------------
+
 primer escaneo con nmap:
 ```bash
 nmap -p- --open -sS -Pn -n -vvv --min-rate 3000 10.129.237.134 -oN puertos

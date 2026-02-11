@@ -187,7 +187,7 @@ tenemos otra ruta donde se almacena la base de datos en que esta en producción 
 
 para ambas bases de datos, la ruta es igual:
 
-<img src='/images/writeup-heal/Pasted image 20250511114805.png'>
+<img src='/images/writeup-heal/Pasted image 20250511114805.png' alt="image">
 
 la base de datos, dado que no es tan grande en la misma respuesta podemos alcanzar a sacar datos:
 
@@ -197,7 +197,7 @@ test@heal : $2a$12$eXeY49S9LZnIaxnEfeN.6ecOg25vI/zRr/ot27AQvOC8.hR9emvYe
 ```
 
 pasándolos por hashes.com para ver el tipo de hash, nos dice:
-<img src='/images/writeup-heal/Pasted image 20250511121127.png'>
+<img src='/images/writeup-heal/Pasted image 20250511121127.png' alt="image">
 
 vamos con hashcat
 ```bash

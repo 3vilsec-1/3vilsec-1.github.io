@@ -104,7 +104,7 @@ ffuf  -c --fl=156  -w /usr/share/seclists/Discovery/DNS/subdomains-top1million-1
 ```
 
 he decidido filtrar por el numero de líneas, ya que todos arrojan código de estado 200 con la redirección, por lo que quiero ver solo aquellos que me den un resultado diferente:
-<img src="/images/writeup-titanic/Pasted image 20250501000428.png">
+<img src="/images/writeup-titanic/Pasted image 20250501000428.png" alt="image">
 tenemos un subdominio disponible dev.titanic.htb
 
 ahora, quiero hacerle fuzzing para descubrir directorios al dominio principal:
@@ -151,11 +151,11 @@ by Ben "epi" Risher 🤓                 ver: 2.11.0
 
 por los directorios podemos ver solo 2 directorios, ahora si vamos a la pagina web para enumerarla:
 
-<img src="/images/writeup-titanic/Pasted image 20250501073317.png">
+<img src="/images/writeup-titanic/Pasted image 20250501073317.png" alt="image">
 
 book tiene un formulario para escoger un viaje en barco y con el botón "submit" vemos que descarga un archivo json, este botón no me muestra un direccionamiento (así que quiero ver esto en burpsuite):
 
-<img src="/images/writeup-titanic/Pasted image 20250501073542.png">
+<img src="/images/writeup-titanic/Pasted image 20250501073542.png" alt="image">
 
 pero antes, quiero mirar el archivo descargado con *exiftool*, para saber si hay datos filtrados:
 ```bash
@@ -185,15 +185,15 @@ nada fuera de lo común
 
 ahora, pasando a burpsuite vemos la redirección para la descarga:
 
-<img src="/images/writeup-titanic/Pasted image 20250501075052.png">
+<img src="/images/writeup-titanic/Pasted image 20250501075052.png" alt="image">
 
 si seguimos la redirección:
-<img src="/images/writeup-titanic/Pasted image 20250501075245.png">
+<img src="/images/writeup-titanic/Pasted image 20250501075245.png" alt="image">
 
 tenemos una url bastante curiosa en la cual podemos probar algunas cosas
 
 con un simple path traversal tenemos:
-<img src="/images/writeup-titanic/Pasted image 20250501075431.png">
+<img src="/images/writeup-titanic/Pasted image 20250501075431.png" alt="image">
 
 la url vulnerable:
 ```html
@@ -211,13 +211,13 @@ pero no he podido acceder a la id_rsa, entonces, esto puede ser una vulnerabilid
 voy a agregar el subdominio a mi /etc/hosts e intentar enumerar que pista o información podemos aprovechar de allí
 
 es un repositorio gitea:
-<img src="/images/writeup-titanic/Pasted image 20250501081154.png">
+<img src="/images/writeup-titanic/Pasted image 20250501081154.png" alt="image">
 google nos dice: *Gitea es un paquete de software de código abierto para alojar el control de versiones de desarrollo de software utilizando Git*
 
 voy a enumerar un poco la pagina:
 
 el repositorio docker-config, tiene el compose.yml de la pagina gitea, aunque tambien tiene credenciales de la base de datos:
-<img src="/images/writeup-titanic/Pasted image 20250501081549.png">
+<img src="/images/writeup-titanic/Pasted image 20250501081549.png" alt="image">
 
 *tambien con esto, sabemos que hay una base de datos disponible, a la cual tenemos un método de acceder*
 
@@ -238,12 +238,12 @@ else:
 
 navegando un poco mas, veo que hay otro usuario:
 
-<img src="/images/writeup-titanic/Pasted image 20250501082641.png">
+<img src="/images/writeup-titanic/Pasted image 20250501082641.png" alt="image">
 
 aunque esto no sirve de mucho
 
 usando la vulnerabilidad path traversal, busco el docker compose, para ver si tiene algo diferente al del gitea:
-<img src="/images/writeup-titanic/Pasted image 20250501092017.png">
+<img src="/images/writeup-titanic/Pasted image 20250501092017.png" alt="image">
 pero no, aunque nos da info interesante, docker usa volúmenes por lo cual, aquí en el compose nos esta diciendo la ruta donde se ubica
 
 si vamos a:
@@ -251,7 +251,7 @@ si vamos a:
 /../../../../../home/developer/gitea/data/gitea/gitea.db
 ```
 
-<img src="/images/writeup-titanic/Pasted image 20250501092351.png">
+<img src="/images/writeup-titanic/Pasted image 20250501092351.png" alt="image">
 
 tenemos la base de datos del gitea y podemos descargarla a nuestra maquina con un wget:
 ```bash
@@ -338,7 +338,7 @@ si intentamos conectarnos por ssh:
 ```bash
 ssh developer@10.10.10.10
 ```
-<img src="/images/writeup-titanic/Pasted image 20250501113638.png">
+<img src="/images/writeup-titanic/Pasted image 20250501113638.png" alt="image">
 
 enumerando un poco la maquina, vemos que toda la aplicación y scripts de la misma están en el directorio /opt
 
@@ -399,7 +399,7 @@ rm /opt/app/static/assets/images/metadata.log && ./identify_images.sh
 ```
 
 al abrir el .log:
-<img src="/images/writeup-titanic/Pasted image 20250501193957.png">
+<img src="/images/writeup-titanic/Pasted image 20250501193957.png" alt="image">
 se están ejecutando comandos de root gracias al archivo xml
 
 así que, para ejecutar un comando mas completo use:
@@ -419,7 +419,7 @@ rm /opt/app/static/assets/images/metadata.log && ./identify_images.sh
 
 y finalmente:
 
-<img src="/images/writeup-titanic/Pasted image 20250501201748.png">
+<img src="/images/writeup-titanic/Pasted image 20250501201748.png" alt="image">
 
 con esto, podemos volvernos root con el comando ***/bin/bash -p***
 
@@ -429,4 +429,4 @@ nos vemos en la siguiente maquina!
 
 ## H4ck th3 W0rld
 
-<img src="/images/devil.jpg" style="border-radius:200px; width:100px;">
+<img src="/images/devil.jpg" style="border-radius:200px; width:100px;" alt="image">

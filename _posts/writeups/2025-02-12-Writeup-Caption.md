@@ -29,7 +29,7 @@ nmap -p- --open -vvv -n -Pn --min-rate 2000 10.129.95.163 -oN Ports
 ```
 
 si vemos el resultado tenemos:
-<img src="/images/writeup-caption/2.png"/>
+<img src="/images/writeup-caption/2.png" alt="image"/>
 
 puente ssh típico para conexiones posteriores, una pagina web y un proxy http.
 
@@ -39,7 +39,7 @@ nmap -p22,80,8080 -sCV -n -vvv 10.129.95.163 -oN PortsOpen
 ```
 
 nmap nos dice:
-<img src="/images/writeup-caption/3.png"/>
+<img src="/images/writeup-caption/3.png" alt="image"/>
 y nos redirige a un dominio **http://caption.htb**
 
 vamos a agregar esa ip y ese dominio al /etc/hosts porque htb siempre hace virtual hosting:
@@ -52,7 +52,7 @@ lo primero que podemos hacer es desplegar la herramienta de whatweb a la pagina 
 whatweb http://caption.htb
 ```
 vemos que es un panel de inicio de sesión:
-<img src="/images/writeup-caption/4.png"/>
+<img src="/images/writeup-caption/4.png" alt="image"/>
 
 normalmente en las maquina difíciles como se acercan un poco mas a un hackeo real, la contraseña no será fácilmente crackeable o posiblemente no tengamos que aprovechar alguna vulnerabilidad web directamente en el panel (aunque nunca debemos asumir) dado que tenemos otro puerto, así que podemos investigar un poco por allí antes de ir a la web y comenzar a probar ataques
 
@@ -61,24 +61,24 @@ podemos empezar haciendo un *Whatweb* tambien a la ip con el puerto del proxy:
 whatweb 10.129.74.15:8080
 ```
 veremos:
-<img src="/images/writeup-caption/5.png"/>
+<img src="/images/writeup-caption/5.png" alt="image"/>
 vemos de nuevo ese servicio ***GitBuket***, así que investigando, vemos que es un servicio de alojamiento de código basado en git para que equipos de desarrollo puedan trabajar.
 
 hora de pasar al navegador y ver las paginas expuestas:
-<img src="/images/writeup-caption/6.png"/>
-<img src="/images/writeup-caption/7.png"/>
+<img src="/images/writeup-caption/6.png" alt="image"/>
+<img src="/images/writeup-caption/7.png" alt="image"/>
 vemos que en la segunda pagina (Gitbucket) el usuario root ha subido cambios al main, y es del portal de inicio de sesión anterior 
 
 además si ojeamos un poco, tiene los archivos de proxy que se están usando (haproxy - varnish)
 ahora, investigando un poco mas, vemos que varnish gestiona peticiones y muestra contenido estático almacenado en la cache (acaso nos servirá para exfiltrar información sobre usuarios para inicio de sesión?)
 
 después de estar viendo un poco los repositorios y probar algunas cosas, me encontré con el panel de inicio de sesión del gitbucket y si allí intentamos las credenciales por defecto:
-<img src="/images/writeup-caption/8.png"/>
+<img src="/images/writeup-caption/8.png" alt="image"/>
 vemos que como la anterior, no pasa nada haha
 
 bueno, si han leído sobre algunos bounties, verán que es muy común el filtrado de credenciales cuando los proyectos se alojan en github, asi que antes de empezar a hacer fuzzing decidí tomar esa ruta, ya que precisamente habían branch subidos en el gitbucket:
 
-<img src="/images/writeup-caption/9.png"/>
+<img src="/images/writeup-caption/9.png" alt="image"/>
 
 descargando los repositorios con git:
 ```bash
@@ -94,7 +94,7 @@ luego de buscar un poco y leer, encontramos unas credenciales dentro del proyect
 ```bash
 git show 98f2c36131078270dd3e11865f7a559d559d488666a1
 ```
-<img src="/images/writeup-caption/10.png"/>
+<img src="/images/writeup-caption/10.png" alt="image"/>
 
 si las probamos en el portal, estarán aun activas
 
@@ -110,7 +110,7 @@ terminando de ver los logs, vemos tambien que hay un commit que repara el bypass
 antes que nada en temas de proxy, podemos ver la aplicación web principal con Burpsuite y conocer si podemos traspasar esos errores que nos arroja o como se ven la peticiones que viajan al servidor.
 
 si vemos de cerca cuando iniciamos sesión la pagina hace una solicitud buscando un archivo local proxy:
-<img src="/images/writeup-caption/11.png"/>
+<img src="/images/writeup-caption/11.png" alt="image"/>
 
 vemos que en las solicitudes resalta una cabecera, ***x-cache*** lo que  nos puede estar dando una pista sobre cual podría ser la brecha de entrada, así que vamos a investigar vulnerabilidades basadas en cache
 
@@ -130,7 +130,7 @@ llegados a este punto, entre las vulnerabilidades comunes vemos que tenemos una 
 
 lo que debemos hacer es revisar los archivos de configuración de los mismos para poder comprender como están trabajando:
 si vamos al haproxy, vemos cuales son las reglas que restringen las peticiones:
-<img src="/images/writeup-caption/12.png"/>
+<img src="/images/writeup-caption/12.png" alt="image"/>
 
 lo primero que vemos es que el servidor esta en escucha por el puerto 80 solicitudes http
 2 línea: va a redirigir las solicitudes que no sean bloqueadas al http_back
@@ -144,12 +144,12 @@ ultima línea, se encarga de que si se cumple la condicion de arriba, se redirij
 el http_back es a donde irán las peticiones que logren pasar estas restricciones, vemos que lo envía a un servidor interno que esta a la escucha en el puerto por defecto del varnish, (aunque antes valida si el servidor esta disponible *check*)
 
 teniendo eso en cuenta, vamos al directorio que contiene los servicios, y vemos como esta montado el varnish.service:
-<img src="/images/writeup-caption/13.png"/>
+<img src="/images/writeup-caption/13.png" alt="image"/>
 vemos que, es el varnish cache
 
 vemos que en el archivo de configuración, el apartado *feature=+http2* lo que quiere decir que el servidor acepta peticiones http2 y para saber como deben ser formuladas esas peticiones, podemos ver el archivo (default.vcl) que se encuentra en el directorio Caption-Portal/config/varnish
 
-<img src="/images/writeup-caption/14.png"/>
+<img src="/images/writeup-caption/14.png" alt="image"/>
 
 con este archivo, podemos darnos una idea de como están funcionando los servidores:
   - el servidor recibe nuestra solicitud que es enviada al puerto 80 como vimos en el primer archivo
@@ -172,7 +172,7 @@ con esta técnica lo que hacemos es enviar una solicitud convencional http1. per
 en las configuraciones vemos que varnish cache acepta estas conexiones pero en el archivo de configuraciones de haproxy, vemos que no esta analizando explícitamente las conexiones http2, (por defecto analiza solo las http1)
 
 esto nos va a permitir crear un túnel directo al backend a través del waf para acceder a los endpoints de la pagina (logs - download)
-<img src="/images/writeup-caption/15.png"/>
+<img src="/images/writeup-caption/15.png" alt="image"/>
 
 
 vamos a usar una herramienta que nos ayudara a traspasar el waf y es especial para estos casos:
@@ -198,7 +198,7 @@ python3 h2csmuggler.py -x http://caption.htb -t http://caption.htb/logs
 ```
 
 si el túnel a través del waf es posible, nos dira lo siguiente:
-<img src="/images/writeup-caption/16.png"/>
+<img src="/images/writeup-caption/16.png" alt="image"/>
 
 ahora, como estamos usando credenciales encontradas en los logs de gitbucket, debemos usar la cookie, si usamos la opcion -help de la herramienta, veremos que podemos usar la cookie con el parámetro -H, quedando como resultado el siguiente comando:
 ```bash
@@ -207,13 +207,13 @@ h2csmuggler.py -x http://caption.htb http://caption.htb/logs -H 'la cookie enter
 la cookie la puedes ver en el burpsuite solo con recargar la pagina y teniendo el proxy activo
 
 algo curioso es que nos redirecciona, dado que ocurre un role_error:
-<img src="/images/writeup-caption/17.png"/>
+<img src="/images/writeup-caption/17.png" alt="image"/>
 no tenemos el privilegio para estar allí
 
 bueno, si intentamos acceder a los otros endpoints, veremos que todo es igual, cuando cambia es si visitamos el de *firewalls* donde la cabecera **x-varnish** muestra mas información y la cabecera age se modifica tambien
 
 investigando, vemos que la x-varnish muestra un identificador de la solicitud actual y a su derecha el id de la solicitud anterior que procesó:
-<img src="/images/writeup-caption/18.png"/>
+<img src="/images/writeup-caption/18.png" alt="image"/>
 la que esta a la derecha, será la petición que nos presento varnish desde su cache
 
 tambien la cabecera ***age*** nos indica el tiempo que el contenido solicitado ha estado disponible en la cache
@@ -223,7 +223,7 @@ tengamos en cuenta que viendo el directorio /home tambien veremos los mismo resu
 esto para que nos sirve?:
 
 pues, si hemos prestado atención, en Burpsuite veremos que cada vez que se hace una solicitud, busca en nuestro equipo una dirección o recurso:
-<img src="/images/writeup-caption/19.png"/>
+<img src="/images/writeup-caption/19.png" alt="image"/>
 investigando un poco, vemos que ese parámetro se usa como analizador de trafico, en este caso, parece que busca alguna configuración proxy en nuestro equipo y parece que dependiendo del valor de ese recurso en nuestro equipo. será lo que mostrara la pagina (genera css dinámico?)
 
 en ocasiones, si tampoco hay verificación de cabeceras. podemos cambiar el origen de las solicitudes con las cabeceras ***X-Forwarded***, estas cabeceras se usan cuando las peticiones deben pasar a través de un proxy o balanceador de carga para darle información al servidor del origen de la solicitud del usuario
@@ -232,15 +232,15 @@ x-forwarded-for: se centra en la ip de origen
 x-forwarded-host: se centra en el nombre de host original
 
 probando ambas cabeceras, vemos que con una en particular sucede lo siguiente:
-<img src="/images/writeup-caption/20.png"/>
+<img src="/images/writeup-caption/20.png" alt="image"/>
 vemos como se busca la url con el 'utm_source' que hemos enviado en la cabecera forwarded-host
 
 si intentamos enviar cualquier dato en la cabecera, podemos controlar lo que aparece en la etiqueta ***source***, y lo que nos viene a la mente cuando controlamos una entrada de usuario? ***XSS***! sobre todo cuando se nos sirve directamente una etiqueta source:
 
 mmm, vemos que al intentarlo, tenemos un error, al incluir una doble comilla al principio dado que en el href esta dentro de comillas y < asi que debemos incluirlos para salir del contexto de la etiqueta:
-<img src="/images/writeup-caption/21.png"/>
+<img src="/images/writeup-caption/21.png" alt="image"/>
 inalmente con el payload adecuado, logramos que al modificar la solicitud desde el proxy de burpsuite, nuestro navegador, ejecute el script enviado en la cabecera:
-<img src="/images/writeup-caption/22.png"/>
+<img src="/images/writeup-caption/22.png" alt="image"/>
 
 ```javascript
 "><script> alert('bacala0') </script>
@@ -253,11 +253,11 @@ ahora si, volviendo a: *para que nos sirve saber que en endpoint almacena las so
 conociendo el tiempo de vida de la cache, podemos esperar a que ocurra un fallo en el cache y antes de que varnish solicite al servidor de nuevo la información, podemos inyectar nuestro payload
 
 el payload, debe cerrar las etiquetas y abrir unas nuevas para que el navegador de la victima lo haga en automático, entonces viendo la cabecera age de respuesta, vamos a esperar a que pasen 120 seg aprox y vamos a enviar nuestro payload *cuando la respuesta este en 120 ya el servidor estará en 0 miss, se paciente y rápido*
-<img src="/images/writeup-caption/23.png"/>
+<img src="/images/writeup-caption/23.png" alt="image"/>
 
 ahora, que haremos con esto? volveremos a usar la herramienta **h2csmuggler** con la nueva cookie:
 
-<img src="/images/writeup-caption/24.png"/>
+<img src="/images/writeup-caption/24.png" alt="image"/>
 
 ahora, teniendo esas urls. podemos intentar acceder al contenido de la siguiente manera:
 ```bash
@@ -265,21 +265,21 @@ pyhon3 h2csmuggler.py -x http://caption.htb http://caption.htb/download?url=http
 ```
 
 que carajos es esto?:
-<img src="/images/writeup-caption/25.png"/>
+<img src="/images/writeup-caption/25.png" alt="image"/>
 si buscamos en Google por el enlace que aparece allí es:
-<img src="/images/writeup-caption/26.png"/>
+<img src="/images/writeup-caption/26.png" alt="image"/>
 buscando vulnerabilidades, vemos que  una de las mas graves recientemente es un path traversal. que nos sirve para leer archivos en el servidor (aunque la verdad tambien apunta a esto, dado que es una aplicación local a la que estamos accediendo y normalmente cuando son locales no se les da mucha importancia a la seguridad de las mismas)
 
 vemos que se ejecuta desde /.cpr/splash.js asi que la base es .cpr/ y vamos a intentar leer desde alli com se nos menciona tambien en el poc:
-<img src="/images/writeup-caption/27.png"/>
+<img src="/images/writeup-caption/27.png" alt="image"/>
 usando doble urlencode (aunque en este caso parece no funcionar directamente ese, intentemos otro por si hay algun filtro)
 
 y buscando en hacktricks, el primer ejemplo que nos muestra aqui:
 https://book.hacktricks.wiki/en/pentesting-web/file-inclusion/index.html?highlight=path%20tra#path-truncation-technique
 en doble encoding, es el que nos funciona:
-<img src="/images/writeup-caption/28.png"/>
+<img src="/images/writeup-caption/28.png" alt="image"/>
 y aparece entre los usuarios a alguien que ya habíamos visto (margo) y esta en el sistema como usuario, asi que como siempre en las maquinas de htb podemos intentar obtener las claves ssh del usuario para finalmente ganar acceso:
-<img src="/images/writeup-caption/29.png"/>
+<img src="/images/writeup-caption/29.png" alt="image"/>
 vemos que podemos acceder remotamente con el usuario, asi que vamos por la clave de conexión id_ecdsa
 
 ```bash
@@ -310,10 +310,10 @@ haciendo un poco de investigación al rededor, mirando los puertos que están en
 ```bash
 netstat -tulnp
 ```
-<img src="/images/writeup-caption/30.png"/>
+<img src="/images/writeup-caption/30.png" alt="image"/>
 
 si buscamos en los procesos del sistema, y filtramos con el nombre del archivo, veremos quien y como se ejecuta en el sistema:
-<img src="/images/writeup-caption/31.png"/>
+<img src="/images/writeup-caption/31.png" alt="image"/>
 
 el servicio se ejecuta como root, y tenemos el código fuente, así que podemos analizarlo para buscar el modo de escalar privilegios en el sistema
 
@@ -407,5 +407,5 @@ vamos a escalar privilegios:
 ```bash
 /bin/bash -p
 ```
-<img src="/images/writeup-caption/32.png"/>
+<img src="/images/writeup-caption/32.png" alt="image"/>
 

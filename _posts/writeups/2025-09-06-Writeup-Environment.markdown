@@ -38,21 +38,21 @@ segundo escaneo:
 nmap -p22,80 -A -n -vvv 10.129.237.134 -oN objetivos
 ```
 
-<img src="/images/writeup-environment/Pasted image 20250614162241.png">
+<img src="/images/writeup-environment/Pasted image 20250614162241.png" alt="image">
 tenemos un domain name *http://environment.htb*
 se agrega el /etc/hosts
 
 enumerando un poco con feroxbuster:
-<img src="/images/writeup-environment/Pasted image 20250614163735.png">
+<img src="/images/writeup-environment/Pasted image 20250614163735.png" alt="image">
 
 en la pagina principal
-<img src="/images/writeup-environment/Pasted image 20250614163638.png">
+<img src="/images/writeup-environment/Pasted image 20250614163638.png" alt="image">
 
 
 
 en la pagina principal tenemos una pista:
 
-<img src="/images/writeup-environment/Pasted image 20250614163619.png">
+<img src="/images/writeup-environment/Pasted image 20250614163619.png" alt="image">
 
 tenemos una api tambien v1.1
 
@@ -66,15 +66,15 @@ feroxbuster -u http://environment.htb/api/v1 -w /usr/share/wordlists/seclists/Di
 
 
 tambien hay un panel de inicio de session:
-<img src="/images/writeup-environment/Pasted image 20250614171948.png">
+<img src="/images/writeup-environment/Pasted image 20250614171948.png" alt="image">
 
 
 
 capturando las solicitudes del panel de inicio de sesión intentamos causar un error en la solicitud:
-<img src="/images/writeup-environment/Pasted image 20250614175740.png">
+<img src="/images/writeup-environment/Pasted image 20250614175740.png" alt="image">
 
 viendo esto y probando varias cosas, si cambiamos el remember o le damos un dato no booleano nos mostrara otro tipo de error:
-<img src="/images/writeup-environment/Pasted image 20250619102707.png">
+<img src="/images/writeup-environment/Pasted image 20250619102707.png" alt="image">
 
 tomando el código resultado, y analisando, tenemos una linea bastante interesante que no indica que si la app es *"preprod"* nos inicie automáticamente como el desarrollador:
 ```php
@@ -99,7 +99,7 @@ $user = User::where('email', $email)->first();
 
 y además, buscando vulnerabilidades para la versión de laravel, encontramos una, la cual tiene un nombre bastante curioso:
 
-<img src="/images/writeup-environment/Pasted image 20250619162249.png">
+<img src="/images/writeup-environment/Pasted image 20250619162249.png" alt="image">
 
  esta vulnerabilidad nos dice que podemos manipular las variables de entorno de laravel, a través de solicitudes web (esto, junto con el nombre de la maquina y la evidencia, podemos ver cual puede ser el camino a seguir o el hilo a tirar)
 
@@ -110,32 +110,32 @@ tenemos un poc:
 https://github.com/Nyamort/CVE-2024-52301
 
 y se nos da un ejemplo que podemos probar:
-<img src="/images/writeup-environment/Pasted image 20250619163537.png">
+<img src="/images/writeup-environment/Pasted image 20250619163537.png" alt="image">
 
  luego de algunas pruebas, nos funciona: 
  ```
  ?--env=argumento 
  ```
-<img src="/images/writeup-environment/Pasted image 20250619163656.png">
+<img src="/images/writeup-environment/Pasted image 20250619163656.png" alt="image">
 tenemos http://environment.htb/management/dashboard
 
 con eso, copiamos los tokens "XSRF-TOKEN y LARABEL_SESSION" y los pegamos en el navegador, desde las herramientas de desarrollador 
 
 si ahora entramos a la pagina:
-<img src="/images/writeup-environment/Pasted image 20250619165307.png">
+<img src="/images/writeup-environment/Pasted image 20250619165307.png" alt="image">
 
 
 finalmente tenemos un usuario:
-<img src="/images/writeup-environment/Pasted image 20250619165338.png">
+<img src="/images/writeup-environment/Pasted image 20250619165338.png" alt="image">
 
 y como veo la unica funcion de la pagina es para ver usuario suscritos y cambiar la foto de perfil, puede que esto sea para cargar una imagen maliciosa y lograr una shell inversa
 
 ## Shell como www-data
 
 luego de probar, intento subir una webshell en php:
-<img src="/images/writeup-environment/Pasted image 20250619180946.png">
+<img src="/images/writeup-environment/Pasted image 20250619180946.png" alt="image">
 
-<img src="/images/writeup-environment/Pasted image 20250619180935.png">
+<img src="/images/writeup-environment/Pasted image 20250619180935.png" alt="image">
 pero no permite ejecutar comandos complejos directamente desde la web shell solo cosas como id o whoami... (aunque de igual modo, nos confirma que este es el camino)
 
 
@@ -318,7 +318,7 @@ echo '</pre>';
 ?>
 ```
 
-<img src="/images/writeup-environment/Pasted image 20250701214919.png">
+<img src="/images/writeup-environment/Pasted image 20250701214919.png" alt="image">
 visitamos:
 "http:\/\/environment.htb\/storage\/files\/3vil.php"
 al mismo tiempo que estaremos en escucha por el puerto 6666 con netcat:
@@ -328,10 +328,10 @@ nc -lnvp 6666
 
 
 tenemos nuestra revshell :D :
-<img src="/images/writeup-environment/Pasted image 20250701215121.png">
+<img src="/images/writeup-environment/Pasted image 20250701215121.png" alt="image">
 
 despues de buscar un poco, podemos ver que, en el directorio home, existe el nombre del usuario con el que entramos, y dentro, esta la primera flag:
-<img src="/images/writeup-environment/Pasted image 20250701225626.png">
+<img src="/images/writeup-environment/Pasted image 20250701225626.png" alt="image">
 
 mirando en el directorio, vemos que tiene un archivo .pgp, estos son archivos que ha sido encriptados por (PGP). esta herramienta para desencriptar, usa las keys que se encuentran en un directorio .gnupg en la home del usuario que intenta abrir el mensaje, si las claves coinciden, funcionará
 
@@ -387,7 +387,7 @@ gpg --decrypt keyvault.gpg
 ```
 
 y tenemos las claves de hish!:
-<img src="/images/writeup-environment/Pasted image 20250702003609.png">
+<img src="/images/writeup-environment/Pasted image 20250702003609.png" alt="image">
 
 finalmente nos podemos conectar por ssh dado que la otra shell es muy limitada y e inestable (se cierra la conexión teniendo que explotar de nuevo la subida maliciosa de la imagen)
 
@@ -397,7 +397,7 @@ ssh hish@environment.htb
 pass:marineSPm@ster!!
 ```
 
-<img src="/images/writeup-environment/Pasted image 20250702003923.png">
+<img src="/images/writeup-environment/Pasted image 20250702003923.png" alt="image">
 
 como siempre, ya que tenemos contraseña, podemos ver los programas o binarios que podemos ejecutar con privilegios:
 ```bash
@@ -405,12 +405,12 @@ sudo -l
 ```
 
 
-<img src="/images/writeup-environment/Pasted image 20250702004141.png">
+<img src="/images/writeup-environment/Pasted image 20250702004141.png" alt="image">
 como sudo, solo podemos ejecutar systeminfo!
 
 algo interesante que vemos, es que tenemos una variable adicional (de nuevo variables de entorno, la maquina se deja ver :D )
 
-<img src="/images/writeup-environment/Pasted image 20250702115518.png">
+<img src="/images/writeup-environment/Pasted image 20250702115518.png" alt="image">
 
 tenemos algo llamado env_keep
 
@@ -443,12 +443,12 @@ ENV=/tmp/3viltest.sh BASH_ENV=/tmp/3viltest.sh sudo systeminfo
 
 tenemos:
 
-<img src="/images/writeup-environment/Pasted image 20250702123536.png">
+<img src="/images/writeup-environment/Pasted image 20250702123536.png" alt="image">
 
 que sudo ejecuta el script de nuestro entorno, incluso, haciendo pruebas, no es necesario siquiera manipular "ENV" podemos lograrlo manipulando solo la variable BASH_ENV:
 
-<img src="/images/writeup-environment/Pasted image 20250702123815.png">
-<img src="/images/writeup-environment/Pasted image 20250702124020.png">
+<img src="/images/writeup-environment/Pasted image 20250702123815.png" alt="image">
+<img src="/images/writeup-environment/Pasted image 20250702124020.png" alt="image">
 
 aquí vemos como llevando la variable ENV valor / y solo manteniendo el valor de la otra variable sigue funcionando, diría que es un path hijaking
 
@@ -465,7 +465,7 @@ BASH_ENV=/tmp/3vil.sh sudo systeminfo
 ```
 
 y ahora verificando la bash:
-<img src="/images/writeup-environment/Pasted image 20250702122317.png">
+<img src="/images/writeup-environment/Pasted image 20250702122317.png" alt="image">
 
 ejecutando:
 ```bash
@@ -473,7 +473,7 @@ bash -p
 ```
 somos root:
 
-<img src="/images/writeup-environment/Pasted image 20250702124254.png">
+<img src="/images/writeup-environment/Pasted image 20250702124254.png" alt="image">
 
 ------------------------------------------------------
 \
@@ -481,4 +481,4 @@ nos vemos en la siguiente maquina!
 
 ## H4ck th3 W0rld
 
-<img src="/images/devil.jpg" style="border-radius:200px; width:100px;">
+<img src="/images/devil.jpg" style="border-radius:200px; width:100px;" alt="image">

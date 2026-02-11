@@ -113,20 +113,20 @@ feroxbuster -u http://planning.htb -w /usr/share/seclists/Discovery/Web-Content/
 ```
 
 nos responde:
-<img src="/images/writeup-planning/Pasted image 20250609203037.png">
+<img src="/images/writeup-planning/Pasted image 20250609203037.png" alt="image">
 
 ahora, si vamos a la pagina
 
-<img src="/images/writeup-planning/Pasted image 20250609203310.png">
+<img src="/images/writeup-planning/Pasted image 20250609203310.png" alt="image">
 
 lo que mas llama mi atención es que tenemos un formulario de contacto:
 
-<img src="/images/writeup-planning/Pasted image 20250609203402.png">
+<img src="/images/writeup-planning/Pasted image 20250609203402.png" alt="image">
 
 podría intentar probar algunas cosas, pero primero veamos las url's encontradas
 
 tenemos un /enroll.php:
-<img src="/images/writeup-planning/Pasted image 20250609203724.png">
+<img src="/images/writeup-planning/Pasted image 20250609203724.png" alt="image">
 
 es otro formulario en el cual podria probar algunas cosas
 
@@ -134,11 +134,11 @@ voy a capturar estos formularios con burpsutie
 
 al capturar ambos, veo que enroll.php esta procesando datos, pero contact.php es un GET y el formulario no esta enviando nada al servidor
 
-<img src="/images/writeup-planning/Pasted image 20250609205431.png">
+<img src="/images/writeup-planning/Pasted image 20250609205431.png" alt="image">
 
 
 probando causar errores, malformaciones y respuestas extrañas del servidor con el formulario enroll.php, he conseguido que el servidor la procese mal agregando { en la parte del numero de teléfono:
-<img src="/images/writeup-planning/Pasted image 20250609210240.png">
+<img src="/images/writeup-planning/Pasted image 20250609210240.png" alt="image">
 
 pero nada mas allá, esta web no parece tener nada, así que vamos ahora con el subdominio
 
@@ -161,17 +161,17 @@ feroxbuster -u http://grafana.planning.htb -w /usr/share/wordlists/seclists/Disc
 ```
 
 tenemos muucho contenido:
-<img src="/images/writeup-planning/Pasted image 20250609220819.png">
+<img src="/images/writeup-planning/Pasted image 20250609220819.png" alt="image">
 y aunque intentemos acceder a cualquiera, debemos autenticarnos, así que vamos a la web
 
-<img src="/images/writeup-planning/Pasted image 20250609221410.png">
+<img src="/images/writeup-planning/Pasted image 20250609221410.png" alt="image">
 
 
 
 probando las credenciales que se nos dan al encender la maquina, funcionan en este panel:
 **admin:0D5oT70Fq13EvB5r***
 
-<img src="/images/writeup-planning/Pasted image 20250609221529.png">
+<img src="/images/writeup-planning/Pasted image 20250609221529.png" alt="image">
 
 ## CVE-2024-9264
 
@@ -179,15 +179,15 @@ mirando la versión de grafana, y buscando vulnerabilidades relacionadas, encont
 https://github.com/nollium/CVE-2024-9264
 
 y probando el exploit:
-<img src="/images/writeup-planning/Pasted image 20250609230249.png">
+<img src="/images/writeup-planning/Pasted image 20250609230249.png" alt="image">
 
 enumerando el sistema, y mirando los hosts, podemos decir que estamos en un entorno docker
 
 este poc, nos sugiere otro comando que he probado:
-<img src="/images/writeup-planning/Pasted image 20250609231508.png">
+<img src="/images/writeup-planning/Pasted image 20250609231508.png" alt="image">
 
 solo tenemos:
-<img src="/images/writeup-planning/Pasted image 20250609231825.png">
+<img src="/images/writeup-planning/Pasted image 20250609231825.png" alt="image">
 
 ## Shell como Enzo
 
@@ -221,21 +221,21 @@ PWD=/usr/share/grafana
 tenemos credenciales! enzo/RioTecRANDEntANT!
 
 si intentamos conectarnos a la maquina por ssh con esas credenciales:
-<img src="/images/writeup-planning/Pasted image 20250609232115.png">
+<img src="/images/writeup-planning/Pasted image 20250609232115.png" alt="image">
 
 estamos dentro en la maquina objetivo  y tenemos la flag de usuario
 
 
 enumerando el entorno, no podemos ejecutar nada como sudo:
 
-<img src="/images/writeup-planning/Pasted image 20250610075152.png">
+<img src="/images/writeup-planning/Pasted image 20250610075152.png" alt="image">
 
 mirando los puertos abiertos y que están en escucha en la maquina con:
 ```bash
 ss -tlp
 ```
 
-<img src="/images/writeup-planning/Pasted image 20250610080224.png">
+<img src="/images/writeup-planning/Pasted image 20250610080224.png" alt="image">
 
 probando traer algunos puertos expuestos, me encuentro con un inicio de sesión en el puerto 8000:
 
@@ -244,7 +244,7 @@ ssh -L 6969:127.0.0.1:8000 enzo@10.129.9.144
 ```
 
 me muestra en el navegador, un panel de inicio de sesión:
-<img src="/images/writeup-planning/Pasted image 20250610091227.png">
+<img src="/images/writeup-planning/Pasted image 20250610091227.png" alt="image">
 
 
 ## Shell como Root
@@ -253,7 +253,7 @@ pero no tengo credenciales, así que buscando en la maquina archivos con la herr
 find / -name '*.db' 2>/dev/null
 ```
 
-<img src="/images/writeup-planning/Pasted image 20250610091533.png">
+<img src="/images/writeup-planning/Pasted image 20250610091533.png" alt="image">
 
 ademas de que si lo abrimos:
 ```
@@ -263,17 +263,17 @@ ademas de que si lo abrimos:
 
 es un archivo en json, que configura unas tareas cron, y además tiene unas credenciales (ya aquí podemos unir algunos puntos) y probando las creds para autenticarme como root en el sistema no funcionan, pero en el panel de inicio de sesión del puerto que trajimos a nuestra maquina de atacantes:
 
-<img src="/images/writeup-planning/Pasted image 20250610091928.png">
+<img src="/images/writeup-planning/Pasted image 20250610091928.png" alt="image">
 
 es una interface grafica para manipular, crear y desplegar tareas cron en el sistema! (vemos las tareas del json que hemos encontrado)
 
 manipulando la crontab *cleanup* dado que se ejecuta cada minuto, quiero volver la /bin/bash suid para tener una shell como root:
 
-<img src="/images/writeup-planning/Pasted image 20250610085700.png">
+<img src="/images/writeup-planning/Pasted image 20250610085700.png" alt="image">
 
 si pulsamos el botón *Run now* y vamos a nuestra shell:
 
-<img src="/images/writeup-planning/Pasted image 20250610085826.png">
+<img src="/images/writeup-planning/Pasted image 20250610085826.png" alt="image">
 
 ya podemos tener la flag de root
 
@@ -283,4 +283,4 @@ nos vemos en la siguiente maquina!
 
 ## H4ck th3 W0rld
 
-<img src="/images/devil.jpg" style="border-radius:200px; width:100px;">
+<img src="/images/devil.jpg" style="border-radius:200px; width:100px;" alt="image">

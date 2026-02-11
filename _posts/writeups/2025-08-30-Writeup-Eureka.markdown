@@ -72,7 +72,7 @@ ssh: podríamos intentar fuerza bruta, pero sin usuarios posibles o contraseñas
 8761: parece un panel de autenticacion corriendo en apache tomcat (muy observador eh!), sin titulo ni nada mas
 
 llama mi atencion ese panel, miraremos primero que hay alli:
-<img src="/images/writeup-eureka/Pasted image 20250707202947.png">
+<img src="/images/writeup-eureka/Pasted image 20250707202947.png" alt="image">
 
 en efecto, pero no tenemos creds
 
@@ -89,7 +89,7 @@ whatweb http://furni.htb
 ```
 
 tenemos:
-<img src="/images/writeup-eureka/Pasted image 20250707203517.png">
+<img src="/images/writeup-eureka/Pasted image 20250707203517.png" alt="image">
 
 *se hizo enumeración DNS sin éxito aparente*
 
@@ -100,31 +100,31 @@ ffuf -w -c /usr/share/seclists/Discovery/Web-Content/quickhits.txt -u  http://fu
 
 Y AHORA:
 
-<img src="/images/writeup-eureka/Pasted image 20250707212946.png">
+<img src="/images/writeup-eureka/Pasted image 20250707212946.png" alt="image">
 
 *nota: siempre probar mas alternativas de diccionario a las que se esta acostumbrado en las maquinas faciles o medias*
 
 ## Information Disclosure:
 
 en http://furni.htb/actuator vemos:
-<img src="/images/writeup-eureka/Pasted image 20250707214431.png">
+<img src="/images/writeup-eureka/Pasted image 20250707214431.png" alt="image">
 
 
 mirando y probando las urls, http:/furni.htb/actuator/heapdump ha descargado un archivo
 
-<img src="/images/writeup-eureka/Pasted image 20250707220344.png">
+<img src="/images/writeup-eureka/Pasted image 20250707220344.png" alt="image">
 
 
 despues de buscar por mucho con el programa *visualVM* que es una interface grafica para ver volcaldos de memoria como este no encontre nada, intentando usar filtros y abriendolo, no tenia resultados al estar en hexdump, pero, convirtiendolo con *strings* y filtrando con grep la palabra "password" ya podia ver un poco mejor el contenido:
 
-<img src="/images/writeup-eureka/Pasted image 20250707230436.png">
+<img src="/images/writeup-eureka/Pasted image 20250707230436.png" alt="image">
 (después de mirar todo, si.... todo haha, no habían credenciales o me podía haber saltado alguna)
 intentando filtrar un poco mas use:
 ```bash
 strings heapdump | grep "password:"
 ```
 dado que solo se buscaba password y podría estar descartando alguna que le siguieran simbolos
-<img src="/images/writeup-eureka/Pasted image 20250707230733.png">
+<img src="/images/writeup-eureka/Pasted image 20250707230733.png" alt="image">
 
 finalmente, cambiando ":" por "="
 
@@ -132,7 +132,7 @@ finalmente, cambiando ":" por "="
 strings heapdump | grep "password="
 ```
 
-<img src="/images/writeup-eureka/Pasted image 20250707231120.png">
+<img src="/images/writeup-eureka/Pasted image 20250707231120.png" alt="image">
 
 *nota: también podríamos haber indicado -i para que no fuera case sensitive, pero lo pensé luego, aunque de igual modo obtuvimos resultados satisfactorios :D*
 
@@ -147,7 +147,7 @@ probando las credenciales en la pagina del puerto 8761 no tenemos resultados, pe
 ssh oscar190@10.129.232.59
 ```
 
-<img src="/images/writeup-eureka/Pasted image 20250708000943.png">
+<img src="/images/writeup-eureka/Pasted image 20250708000943.png" alt="image">
 
 (no creo que este sea el usuario, posiblemente haya que hacer movimiento lateral)
 
@@ -163,11 +163,11 @@ cd /var/www/web
 grep -iE -r "password"
 ```
 y nos muestra un recurso que tiene una contrasena diferenta a la encontrada en el otro archivo pero para el mismo usuario oscar:
-<img src="/images/writeup-eureka/Pasted image 20250708003548.png">
+<img src="/images/writeup-eureka/Pasted image 20250708003548.png" alt="image">
 
 si miramos ese archivo (el ultimo) que apararece en la imagen anterior tenemos en /var/www/web/Eureka-Server/src/mnain/resources/application.yaml:
 
-<img src="/images/writeup-eureka/Pasted image 20250708003122.png">
+<img src="/images/writeup-eureka/Pasted image 20250708003122.png" alt="image">
 
 (estas si parecen las credenciales correctas para el panel de la web)
 ```
@@ -176,7 +176,7 @@ user: EurekaSrvr password: 0scarPWDisTheB3st
 <h3>MisConfiguration y XSS:</h3>
 usando las credenciales:
 
-<img src="/images/writeup-eureka/Pasted image 20250708003747.png">
+<img src="/images/writeup-eureka/Pasted image 20250708003747.png" alt="image">
 
 al parecer no tenemos ninguna funcionalidad en la pagina, asi que voy a buscar cves relacionados a este servidor
 
@@ -185,7 +185,7 @@ al parecer no tenemos ninguna funcionalidad en la pagina, asi que voy a buscar c
 después de mucha lectura, consultas con chat-gpt, pruebas, algo de ayuda de la comunidad, finalmente tengo los pasos para la vulneracion de este servidor
 
 lo primero, el el nombre, podemos buscar spring eureka server vulnerabilities en google y veremos:
-<img src="/images/writeup-eureka/Pasted image 20250708213642.png">
+<img src="/images/writeup-eureka/Pasted image 20250708213642.png" alt="image">
 https://engineering.backbase.com/2023/05/16/hacking-netflix-eureka
 
 al mirar no eran vulnerabilidades en si, sino malas configuraciones, una de ellas, permitia reemplazar o inyectar un servicio malicioso en el servidor, y si algun usuario privilegiado lo visitaba, pues le robariamos las credenciales.
@@ -198,24 +198,24 @@ con el comando:
 ```bash
 grep -iE -r "miranda"
 ```
-<img src="/images/writeup-eureka/Pasted image 20250708214716.png">
+<img src="/images/writeup-eureka/Pasted image 20250708214716.png" alt="image">
 hay una cantidad inusual de inicios de sesion ante *USER-MANAGEMENT-SERVICE* el cual es un servicio de el servidor eureka el cual ya tenemos credenciales:
-<img src="/images/writeup-eureka/Pasted image 20250708215111.png">
+<img src="/images/writeup-eureka/Pasted image 20250708215111.png" alt="image">
 
 lo que nos hace pensar que hay alguna tarea cron programada para que el usuario visite específicamente ese servicio constantemente
 
 en el articulo, la primera vulnerabilidad habla sobre ssrf, el cual nos serviria para ver alguna pagina oculta a la cual no llegamos, (no nos hace mucho sentido con lo que sabemos hasta ahora)
 
 la segunda vulnerabilidad:
-<img src="/images/writeup-eureka/Pasted image 20250708215745.png">
+<img src="/images/writeup-eureka/Pasted image 20250708215745.png" alt="image">
 
 robo de trafico y xss ( y sabemos que los xss nos siven para robar credenciales, cookies, etc) esto, mas los logs vistos, nos indica que podemos este ataque podemos intentarlo
 
 en el mismo blog, nos dicen como podemos comunicarnos con el servidor para levantar o reemplazar un servicio desde una solicitud de burpsuite
-<img src="/images/writeup-eureka/Pasted image 20250708220114.png">
+<img src="/images/writeup-eureka/Pasted image 20250708220114.png" alt="image">
 
 yo quise hacerlo desde la terminal con una solicitud curl, asi que pasando el json a un llm y detallando que era lo que quería hacer, además de que lo pulí un poco, basándome en el propio servicio que nos muestra la pagina:
-<img src="/images/writeup-eureka/Pasted image 20250708220347.png">
+<img src="/images/writeup-eureka/Pasted image 20250708220347.png" alt="image">
 *puedes verlo visitando /eureka/apps/USER-MANAGEMENT-SERVICE*
 
 después de varios fallos y limpiando un poco la solicitud mientras hacia pruebas, finalmente este fue el comando que me funciono:
@@ -254,15 +254,15 @@ nc -lnvp 8081
 ```
 
 el servidor se vera de este modo:
-<img src="/images/writeup-eureka/Pasted image 20250708221820.png">
+<img src="/images/writeup-eureka/Pasted image 20250708221820.png" alt="image">
 
 en un minuto recibiras respuesta
 
 data recibida con un panel malicioso de inicio de sesion:
-<img src="/images/writeup-eureka/Pasted image 20250708221941.png">
+<img src="/images/writeup-eureka/Pasted image 20250708221941.png" alt="image">
 
 data recibida sin panel malicioso:
-<img src="/images/writeup-eureka/Pasted image 20250708222028.png">
+<img src="/images/writeup-eureka/Pasted image 20250708222028.png" alt="image">
 (como vemos, funciona en ambos casos)
 
 ## Shell como Miranda:
@@ -287,7 +287,7 @@ ahora:
 ssh miranda-wise@furni.htb
 ```
 
-<img src="/images/writeup-eureka/Pasted image 20250708223912.png">
+<img src="/images/writeup-eureka/Pasted image 20250708223912.png" alt="image">
 
 tenemos la primera flag
 
@@ -307,7 +307,7 @@ done
 ```
 
 Podemos ver:
-<img src="/images/writeup-eureka/Pasted image 20250709123319.png">
+<img src="/images/writeup-eureka/Pasted image 20250709123319.png" alt="image">
 
 y en el directorio /opt tenemos *log_analyse.sh*:
 
@@ -461,7 +461,7 @@ echo -e "\n${GREEN}Analysis completed. Results saved to $OUTPUT_FILE${RESET}"
 
 es un script que pertenece a root, y que al pasarle un archivo .log lo analiza y deja un resultado:
 
-<img src="/images/writeup-eureka/Pasted image 20250708235417.png">
+<img src="/images/writeup-eureka/Pasted image 20250708235417.png" alt="image">
 
 *nota: al ejecutarlo, aun no se muestra en el listado de comandos o de procesos ejecutados, ya sea con ps, o ss*
 
@@ -469,13 +469,13 @@ analizando el script, vemos que usa grep sin sanitizar y tambien awk
 
 aqui probando crear mi propio archivo de logs, y metiendo comandos maliciosos entre ellos, como aqui:
 
-<img src="/images/writeup-eureka/Pasted image 20250709003454.png">
+<img src="/images/writeup-eureka/Pasted image 20250709003454.png" alt="image">
 
 siempre se tomaban y se imprimian por pantalla:
-<img src="/images/writeup-eureka/Pasted image 20250709012625.png">
+<img src="/images/writeup-eureka/Pasted image 20250709012625.png" alt="image">
 
 hasta que modifique los codigos de estado:
-<img src="/images/writeup-eureka/Pasted image 20250709012724.png">
+<img src="/images/writeup-eureka/Pasted image 20250709012724.png" alt="image">
 
 el error era diferente ya que se espera un numero y se le esta pasando texto, pero lo importante es que logramos salirnos o desviar el flujo del programa
 
@@ -483,25 +483,25 @@ despues de algunas pruebas, vemos que debemos producir un error para salir del f
 
 asi que probamos:
 
-<img src="/images/writeup-eureka/Pasted image 20250709013317.png">
+<img src="/images/writeup-eureka/Pasted image 20250709013317.png" alt="image">
 
  y no funciono, por que? porque al tener un numero entra en el filtro y causa error, pero, al inyectar:
 
-<img src="/images/writeup-eureka/Pasted image 20250709013832.png">
+<img src="/images/writeup-eureka/Pasted image 20250709013832.png" alt="image">
 
 tenemos:
 
-<img src="/images/writeup-eureka/Pasted image 20250709014024.png">
+<img src="/images/writeup-eureka/Pasted image 20250709014024.png" alt="image">
 
 el script ha ejecutado el comando
 
 aunque, si miramos el archivo:
 
-<img src="/images/writeup-eureka/Pasted image 20250709014331.png">
+<img src="/images/writeup-eureka/Pasted image 20250709014331.png" alt="image">
 
 tampoco podemos modificar como suid la bash:
 
-<img src="/images/writeup-eureka/Pasted image 20250709014524.png">
+<img src="/images/writeup-eureka/Pasted image 20250709014524.png" alt="image">
 
 ## Root:
 
@@ -525,7 +525,7 @@ esperamos un par de minutos y finalmente:
 ```
 bash -p
 ```
-<img src="/images/writeup-eureka/Pasted image 20250709130619.png">
+<img src="/images/writeup-eureka/Pasted image 20250709130619.png" alt="image">
 
 ------------------------------------------------------
 \
@@ -533,4 +533,4 @@ nos vemos en la siguiente maquina!
 
 ## H4ck th3 W0rld 
 
-<img src="/images/devil.jpg" style="border-radius:200px; width:100px;">
+<img src="/images/devil.jpg" style="border-radius:200px; width:100px;" alt="image">

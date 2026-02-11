@@ -71,21 +71,21 @@ bueno, todo esto me dice que es un editor de código pero que se esta ejecutando
 
 en este caso no tenemos un host, así que pasare directamente a la web
 
-<img src="/images/writeup-code/Pasted image 20250510085835.png">
+<img src="/images/writeup-code/Pasted image 20250510085835.png" alt="image">
 se esta enviando código python y se esta ejecutando, seria posible enviar una revshell? posiblemente no funcione
 
 tambien tenemos otras funcionalidades, guardar - registrarnos - logearnos - acerca de
 
 si nos registramos, tenemos una nueva funcionalidad que nos muestra nuestro código guardado:
 
-<img src="/images/writeup-code/Pasted image 20250510090956.png">
+<img src="/images/writeup-code/Pasted image 20250510090956.png" alt="image">
 
 si probamos:
 ```python
 import os
 print("whoami")
 ```
-<img src="/images/writeup-code/Pasted image 20250510091212.png">
+<img src="/images/writeup-code/Pasted image 20250510091212.png" alt="image">
 
 tenemos restricciones (aquí veo que la rev shell no funcionara), así que supongo que debemos buscar el modo de enumerar el entorno
 
@@ -99,7 +99,7 @@ con un comando para enumerar funciones y variables disponibles:
 ```python
 print(dir())
 ```
-<img src="/images/writeup-code/Pasted image 20250510091751.png">
+<img src="/images/writeup-code/Pasted image 20250510091751.png" alt="image">
 
 esto será de enumerar con python :D 
 
@@ -154,7 +154,7 @@ print(dir(User))
 ```
 veremos:
 
-<img src="/images/writeup-code/Pasted image 20250510105805.png">
+<img src="/images/writeup-code/Pasted image 20250510105805.png" alt="image">
 
 si probamos:
 ```python
@@ -165,7 +165,7 @@ le estamos diciendo que haga uso de la clase, que realice la Query (que es un ob
 
 en este caso nos muestra que la tabla de User tiene 2 objetos:
 
-<img src="/images/writeup-code/Pasted image 20250510105426.png">
+<img src="/images/writeup-code/Pasted image 20250510105426.png" alt="image">
 
 aunque dir nos ha mostrado o nos da una idea del contenido de la tabla, para confirmar podemos usar:
 ```python
@@ -177,10 +177,10 @@ print(User.__table__.columns.keys())
  print([(u.username, u.password) for u in User.query.all()])
 ```
 
-<img src="/images/writeup-code/Pasted image 20250510110803.png">
+<img src="/images/writeup-code/Pasted image 20250510110803.png" alt="image">
 
 usando https://hashes.com/es/tools/hash_identifier veo que son del tipo md5:
-<img src="/images/writeup-code/Pasted image 20250510114328.png">
+<img src="/images/writeup-code/Pasted image 20250510114328.png" alt="image">
 
 ## SSH:
 voy a romperlos con hashcat:
@@ -199,33 +199,33 @@ con esto, podría intentar iniciar sesión en la pagina y ver si hay datos almac
 
 
 development solo tiene un test de python:
-<img src="/images/writeup-code/Pasted image 20250510114903.png">
+<img src="/images/writeup-code/Pasted image 20250510114903.png" alt="image">
 
 y martin no tiene nada, puedo probar ssh, aunque no creo que development lo este, intentare primero a martin:
 ```bash
 ssh martin@10.10.10.10
 ```
 
-<img src="/images/writeup-code/Pasted image 20250510115227.png">
+<img src="/images/writeup-code/Pasted image 20250510115227.png" alt="image">
 
 enumerando, no tenemos la flag por ningún lado, lo cual es extraño
 
 ## Flag.txt:
 
 el home del usuario solo tiene un directorio /backup el cual tiene un archivo comprimido con el home del otro usuario del sistema app-backup en el cual tampoco esta la flag, solo están los scripts de la aplicación:
-<img src="/images/writeup-code/Pasted image 20250510121148.png">
+<img src="/images/writeup-code/Pasted image 20250510121148.png" alt="image">
 
 mirando que podemos ejecutar como root sin contrasena, tenemos:
-<img src="/images/writeup-code/Pasted image 20250510121233.png">
+<img src="/images/writeup-code/Pasted image 20250510121233.png" alt="image">
 /usr/bin/backy.sh
 
 que puede estar relacionado a los backups que se crean en nuestro directorio
 
 el ejecutar el script, me dice que se guia por task.json para crear el backup:
-<img src="/images/writeup-code/Pasted image 20250510121448.png">
+<img src="/images/writeup-code/Pasted image 20250510121448.png" alt="image">
 
 y  nos muestra un backup actualizado:
-<img src="/images/writeup-code/Pasted image 20250510121516.png">
+<img src="/images/writeup-code/Pasted image 20250510121516.png" alt="image">
 
 pero dentro de este tampoco hay ninguna flag
 
@@ -252,14 +252,14 @@ tar -xf archivo.tar.bz2
 
 y tenemos finalmente la primera flag:
 
-<img src="/images/writeup-code/Pasted image 20250510122211.png">
+<img src="/images/writeup-code/Pasted image 20250510122211.png" alt="image">
 
 dado que el script se ejecuta como root, podemos intentar escalar privilegios tambien con el
 
 ## Escalando Privilegios:
 
 cambiando la ruta del json a /root/ me dice:
-<img src="/images/writeup-code/Pasted image 20250510122504.png">
+<img src="/images/writeup-code/Pasted image 20250510122504.png" alt="image">
 
 
 mirando el script que ejecutamos backy.sh:
@@ -328,7 +328,7 @@ despues de algunas pruebas lo que me dio resultados fue un path traversal doble 
 tuve que traer la flag directamente porque el directorio entero no lo traía 
 
 al descomprimir, tenemos la flag:
-<img src="/images/writeup-code/Pasted image 20250510142309.png">
+<img src="/images/writeup-code/Pasted image 20250510142309.png" alt="image">
 
 <h6>Mas allá de la flag:</h6>
 
@@ -344,7 +344,7 @@ tambien si quieres dominio total, he conseguido la id_rsa para conectarnos como 
 }
 ```
 
-<img src="/images/writeup-code/Pasted image 20250510143407.png">
+<img src="/images/writeup-code/Pasted image 20250510143407.png" alt="image">
 
 en ese mismo directorio ejecutamos:
 ```bash
@@ -353,7 +353,7 @@ ssh root@localhost -i id_rsa
 
 y listo, no necesitamos cambiar los permisos porque se mantienen igual que el original:
 
-<img src="/images/writeup-code/Pasted image 20250510143620.png">
+<img src="/images/writeup-code/Pasted image 20250510143620.png" alt="image">
 
 ------------------------------------------------------
 \
@@ -361,4 +361,4 @@ nos vemos en la siguiente maquina!
 
 ## H4ck th3 W0rld
 
-<img src="/images/devil.jpg" style="border-radius:200px; width:100px;">
+<img src="/images/devil.jpg" style="border-radius:200px; width:100px;" alt="image">

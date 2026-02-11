@@ -118,26 +118,26 @@ competición de gatos haha
 ahora si voy a la web, y ver que se puede enumerar antes de pasar a los otros directorios
 
 panel principal:
-<img src="/images/writeup-cat/Pasted image 20250513074216.png">
+<img src="/images/writeup-cat/Pasted image 20250513074216.png" alt="image">
 
 hay un panel de inicio de registro:
-<img src="/images/writeup-cat/Pasted image 20250513074333.png">
+<img src="/images/writeup-cat/Pasted image 20250513074333.png" alt="image">
 
 y otro de inicio de sesión:
 
-<img src="/images/writeup-cat/Pasted image 20250513074438.png">
+<img src="/images/writeup-cat/Pasted image 20250513074438.png" alt="image">
 
 no tengo credenciales, asi que voy a crear una cuenta
 
 hay un apartado para subir imágenes de gatos:
 
-<img src="/images/writeup-cat/Pasted image 20250513074657.png">
+<img src="/images/writeup-cat/Pasted image 20250513074657.png" alt="image">
 
 en el cual podría intentar cargar algún archivo malicioso
 
 en el .git:
 
-<img src="/images/writeup-cat/Pasted image 20250513080254.png">
+<img src="/images/writeup-cat/Pasted image 20250513080254.png" alt="image">
 
 para los subdirectorios dado que no se pueden acceder desde la web, voy a usar una herramienta para traer a mi maquina todo el directorio git, ademas tambienel /admin.php redirecciona a la pagina de inicio de sesion, posiblemente esta buscando una cookie (lo que hace que no podamos probar cosas en ese panel)
 
@@ -153,7 +153,7 @@ git-dumper http://cat.htb/.git .
 
 y trajo mucho:
 
-<img src="/images/writeup-cat/Pasted image 20250513081231.png">
+<img src="/images/writeup-cat/Pasted image 20250513081231.png" alt="image">
 
 en la ruta .git/logs:
 ```
@@ -250,13 +250,13 @@ python3 -m http.server 80
 ```
 
 nos registramos con un nombre nada sospechoso:
-<img src="/images/writeup-cat/Pasted image 20250515091233.png">
+<img src="/images/writeup-cat/Pasted image 20250515091233.png" alt="image">
 
 y registramos a nuestro gato malvado
-<img src="/images/writeup-cat/Pasted image 20250513180210.png">
+<img src="/images/writeup-cat/Pasted image 20250513180210.png" alt="image">
 
 como resultado a los 30 seg:
-<img src="/images/writeup-cat/Pasted image 20250515091340.png">
+<img src="/images/writeup-cat/Pasted image 20250515091340.png" alt="image">
 
 tenemos una cookie! 
 
@@ -265,12 +265,12 @@ PHPSESSID=g0u6aq1u6p3nftveo8ipmkphi5
 ```
 
 iniciando sesión, y cambiando la cookie desde las herramientas de navegador:
-<img src="/images/writeup-cat/Pasted image 20250513181247.png">
+<img src="/images/writeup-cat/Pasted image 20250513181247.png" alt="image">
 
 ahora tenemos disponible un panel administrativo pero enumerándolo, no encontramos nada, solo lo que habíamos visto en el directorio .git
 
 cuando tenemos una solicitud de gato como la que acabamos de enviar tenemos esto, y podemos decidir si aceptar o rechazar a nuestro gato
-<img src="/images/writeup-cat/Pasted image 20250515091516.png">
+<img src="/images/writeup-cat/Pasted image 20250515091516.png" alt="image">
 
 en el código de admin.php, vemos que al mostrar el gato, lo hace de una forma insegura, que hace pensar en una inyección sql:
 ```php
@@ -299,10 +299,10 @@ toma el catName y lo introduce a la base de datos con un exec
 si te cuesta un poco entenderlo desde el código, puedes ver que en burpsuite capturando esta solicitud, logramos conseguir un error en el servidor:
 
 solicitud normal:
-<img src="/images/writeup-cat/Pasted image 20250515093324.png">
+<img src="/images/writeup-cat/Pasted image 20250515093324.png" alt="image">
 
 solicitud con error en la base de datos:
-<img src="/images/writeup-cat/Pasted image 20250515093352.png">
+<img src="/images/writeup-cat/Pasted image 20250515093352.png" alt="image">
 
 modo de ataque:
 primero vamos a copiar todo el archivo de la solicitud POST que estamos enviando desde burpsuite (lo usaremos con sqlmap)
@@ -336,7 +336,7 @@ si no te funciona a la primera, tranquilo... elimina el archivo */home/user/.loc
 
 después de esto, tenemos:
 
-<img src="/images/writeup-cat/Pasted image 20250515094705.png">
+<img src="/images/writeup-cat/Pasted image 20250515094705.png" alt="image">
 
 ## Shell como rosa:
 
@@ -353,7 +353,7 @@ rosa : ac369922d560f17d6eeb8b2c7dec498c : soyunaprincesarosa
 
 y nos podemos conectar con ssh
 
-<img src="/images/writeup-cat/Pasted image 20250515102155.png">
+<img src="/images/writeup-cat/Pasted image 20250515102155.png" alt="image">
 
 pero aquí no esta la flag debemos hacer
 
@@ -429,15 +429,15 @@ tenemos acceso a los logs de la web!:
 ```
 
 mirando /var/log/syslog:
-<img src="/images/writeup-cat/Pasted image 20250515103550.png">
+<img src="/images/writeup-cat/Pasted image 20250515103550.png" alt="image">
 root esta ejecutando un script de limpieza para un gitea (puede ser la escalada?)
 además de que esta enviando un email (es una tarea cron)
 
 tambien en el /var/log/apache2/access.log vemos las credenciales del usuario axel que es otro usuario con un directorio /home:
-<img src="/images/writeup-cat/Pasted image 20250515104044.png">
+<img src="/images/writeup-cat/Pasted image 20250515104044.png" alt="image">
 ***aNdZwgC4tI9gnVXv_e3Q***
 
-<img src="/images/writeup-cat/Pasted image 20250515104330.png">
+<img src="/images/writeup-cat/Pasted image 20250515104330.png" alt="image">
 
 aquí tendremos la ***Flag del usuario***
 
@@ -446,7 +446,7 @@ aquí tendremos la ***Flag del usuario***
 antes encontramos que root, estaba enviando email, así que iré a /var/mail
 
 el axel tenemos un puerto con detalles de un repositorio:
-<img src="/images/writeup-cat/Pasted image 20250515104846.png">
+<img src="/images/writeup-cat/Pasted image 20250515104846.png" alt="image">
 **http://localhost:3000/administrator/Employee-management/raw/branch/main/README.md**
 
 (no se puede leer los otros emails)
@@ -464,7 +464,7 @@ ssh -L 3000:127.0.0.1:3000 axel@10.10.10.10
 
 
 tenemos:
-<img src="/images/writeup-cat/Pasted image 20250515105339.png">
+<img src="/images/writeup-cat/Pasted image 20250515105339.png" alt="image">
 
 
 aunque hay 3 usuarios, no hay repositorios o no puedo ver nada mas allá o la ruta que se menciona en el mail aunque si es posible iniciar sesión como axel 
@@ -473,15 +473,15 @@ en el mail, vemos que nos piden crear un repositorio y que otro usuario podrá v
 
 mirando vulnerabilidades para gitea, tenemos un xss que se hace a través de un repositorio y coincide con la versión del gitea que esta presente:
 
-<img src="/images/writeup-cat/Pasted image 20250515111113.png">
+<img src="/images/writeup-cat/Pasted image 20250515111113.png" alt="image">
 https://www.exploit-db.com/exploits/52077
 
 primer intento a ver si había alguna cookie que robar dado que el escenario es como el anterior:
 
-<img src="/images/writeup-cat/Pasted image 20250515193622.png">
+<img src="/images/writeup-cat/Pasted image 20250515193622.png" alt="image">
 
 al principio no me daba respuesta, pero luego de leer el correo, veo que debemos añadir un README.md al repositorio cuando lo creemos:
-<img src="/images/writeup-cat/Pasted image 20250515193744.png">
+<img src="/images/writeup-cat/Pasted image 20250515193744.png" alt="image">
 
 enviamos el correo con mensaje:
 ```bash
@@ -489,18 +489,18 @@ echo -e "new 3vilrepo check if  http://localhost:3000/axel/3vilrepo1" | sendmail
 ```
 
 no existía ninguna cookie:
-<img src="/images/writeup-cat/Pasted image 20250515193418.png">
+<img src="/images/writeup-cat/Pasted image 20250515193418.png" alt="image">
 lo intente con nc porque no me gustaba como python mostraba la data
 
 así que bueno, y si intentamos que nos devuelva la data entera el admin? la data que tiene  en su repo? hacerle una doble redireccion?
 primero creamos el xss con la solicitud, combinando el payload de la vulnerabilidad + el usado la vez anterior + uno nuevo que nos enviara la data:
 
-<img src="/images/writeup-cat/Pasted image 20250515193256.png">
+<img src="/images/writeup-cat/Pasted image 20250515193256.png" alt="image">
 
 tenemos:
-<img src="/images/writeup-cat/Pasted image 20250515194322.png">
+<img src="/images/writeup-cat/Pasted image 20250515194322.png" alt="image">
 si lo convertimos desconvertimos de base64:
-<img src="/images/writeup-cat/Pasted image 20250515194425.png">
+<img src="/images/writeup-cat/Pasted image 20250515194425.png" alt="image">
 
 nos esta devolviendo la data, asi que bueno, que mas nos podemos traer? todo proyecto debe tener un index, y vimos que la maquina trabaja con php, asi que probando con:
 ```javascript
@@ -510,11 +510,11 @@ nos esta devolviendo la data, asi que bueno, que mas nos podemos traer? todo pro
 *siguiendo los pasos anteriores*
 
 tenemos:
-<img src="/images/writeup-cat/Pasted image 20250515194630.png">
+<img src="/images/writeup-cat/Pasted image 20250515194630.png" alt="image">
 
 si probamos estas creds como root:
 
-<img src="/images/writeup-cat/Pasted image 20250515192908.png">
+<img src="/images/writeup-cat/Pasted image 20250515192908.png" alt="image">
 
 ------------------------
 \
@@ -522,4 +522,4 @@ nos vemos en la siguiente maquina!
 
 ## H4ck th3 W0rld
 
-<img src="/images/devil.jpg" style="border-radius:200px; width:100px;">
+<img src="/images/devil.jpg" style="border-radius:200px; width:100px;" alt="image">

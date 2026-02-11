@@ -79,7 +79,7 @@ nmap -p- --open -sU -Pn -vvv -n --min-rate 5000  10.129.3.120 -oN puertosUDP
 ```
 aunque esto nos reporta mucha, mucha basura, podemos ver los que nos han respondido con el ttl:
 
-<img src="/images/Writeup-underpass/Pasted image 20250503220727.png">
+<img src="/images/Writeup-underpass/Pasted image 20250503220727.png" alt="image">
 
 oh, el protocolo olvidado, **SNMP** 
 
@@ -105,7 +105,7 @@ apt install snmp-mibs-downloader
 
 luego iremos al archivo */etc/snmp/snmp.conf* y  en la linea *mibs :* la comentaremos:
 
-<img src="/images/Writeup-underpass/Pasted image 20250504074036.png">
+<img src="/images/Writeup-underpass/Pasted image 20250504074036.png" alt="image">
 
 finalmente usaremos snmpwalk:
 ```bash
@@ -187,7 +187,7 @@ que es daloradius?
 
 es una app web!
 
-<img src="/images/Writeup-underpass/Pasted image 20250504084849.png">
+<img src="/images/Writeup-underpass/Pasted image 20250504084849.png" alt="image">
 
 finalmente veo algo, desde aquí puedo intentar hacer fuzzing y mirar recursos o directorios:
 ```bash
@@ -232,23 +232,23 @@ y finalmente tenemos:
 ```
 
 lo mas interesante encontrado fue un panel de inicio de sesion del daloradius:
-<img src="/images/Writeup-underpass/Pasted image 20250504091456.png">
+<img src="/images/Writeup-underpass/Pasted image 20250504091456.png" alt="image">
 
 pero me pedia contrasena, supuse que eran las que tiene daloradius por defecto asi que intente varias mas, hice un poco de fuzing y no tenia resultados, asi que fui al github del proyecto y busque por "login.php" a ver si había algo y:
-<img src="/images/Writeup-underpass/Pasted image 20250504095953.png">
+<img src="/images/Writeup-underpass/Pasted image 20250504095953.png" alt="image">
 
 esa ruta no es igual a la del panel... existen 2 paneles de inicio de sesion? esta dice /operators/ y yo tengo /users/, exite otro panel?
 
 si! hay otro panel:
-<img src="/images/Writeup-underpass/Pasted image 20250504100303.png">
+<img src="/images/Writeup-underpass/Pasted image 20250504100303.png" alt="image">
  y al probar en este las credenciales por defecto: **administrator:radius**
 
 ## ssh como svcMosh:
 
-<img src="/images/Writeup-underpass/Pasted image 20250504100414.png">
+<img src="/images/Writeup-underpass/Pasted image 20250504100414.png" alt="image">
 
 mirando users listing, existe un solo usuario:
-<img src="/images/Writeup-underpass/Pasted image 20250504100524.png">
+<img src="/images/Writeup-underpass/Pasted image 20250504100524.png" alt="image">
 
 me da un hash de contraseña:
 ```bash
@@ -262,7 +262,7 @@ hashcat  hash /usr/share/wordlists/rockyou.txt -m 0
 
 además de que en la pagina muestra que si es un hash md5:
 
-<img src="/images/Writeup-underpass/Pasted image 20250504102243.png">
+<img src="/images/Writeup-underpass/Pasted image 20250504102243.png" alt="image">
 
 como resultado:
 ```
@@ -290,7 +290,7 @@ me intento conectar por ssh:
 ```bash
 ssh svcMosh@10.10.10.10
 ```
-<img src="/images/Writeup-underpass/Pasted image 20250504102842.png">
+<img src="/images/Writeup-underpass/Pasted image 20250504102842.png" alt="image">
 
 ***Primera flag*** 
 
@@ -315,7 +315,7 @@ MOSH_key=4NeC...vZFe mosh-client 127.0.0.1 60000
 
 y se conectara al puerto:
 
-<img src="/images/Writeup-underpass/Pasted image 20250504110218.png">
+<img src="/images/Writeup-underpass/Pasted image 20250504110218.png" alt="image">
 
 ***Flag del sistema***
 
@@ -329,4 +329,4 @@ nos vemos en la siguiente maquina!
 
 ## H4ck th3 W0rld
 
-<img src="/images/devil.jpg" style="border-radius:200px; width:100px;">
+<img src="/images/devil.jpg" style="border-radius:200px; width:100px;" alt="image">

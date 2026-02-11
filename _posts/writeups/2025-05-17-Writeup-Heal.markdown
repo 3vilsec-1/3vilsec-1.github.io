@@ -78,7 +78,7 @@ http://heal.htb [200 OK] Country[RESERVED][ZZ], HTML5, HTTPServer[Ubuntu Linux][
 ```
 
 voy a ir a la web
-<img src='/images/writeup-heal/Pasted image 20250511095431.png'>
+<img src='/images/writeup-heal/Pasted image 20250511095431.png' alt="image">
 
 es una web para construir currículos y tenemos un panel de inicio de sessión y de registro
 
@@ -86,7 +86,7 @@ no me permite crear una cuenta
 
 mirando la solicitud en el burpsuite tenemos:
 
-<img src='/images/writeup-heal/Pasted image 20250511100436.png'>
+<img src='/images/writeup-heal/Pasted image 20250511100436.png' alt="image">
 
 otro subdominio y es una api voy a agregarlo a mi /etc/hosts y veremos que encontramos
 
@@ -95,15 +95,15 @@ otro subdominio y es una api voy a agregarlo a mi /etc/hosts y veremos que encon
 ```
 
 despues de agregarla a mis hosts, ha podido reconocer la llamada y registrar la cuenta:
-<img src='/images/writeup-heal/Pasted image 20250511101628.png'>
+<img src='/images/writeup-heal/Pasted image 20250511101628.png' alt="image">
 
 hemos ingresado a un panel para elaborar un resumen laboral
 
 enumerando la web, hay un apartado que dice **take a survey** :
-<img src='/images/writeup-heal/Pasted image 20250511101804.png'>
+<img src='/images/writeup-heal/Pasted image 20250511101804.png' alt="image">
 
 si clicamos, vemos que tenemos otro subdominio:
-<img src='/images/writeup-heal/Pasted image 20250511101834.png'>
+<img src='/images/writeup-heal/Pasted image 20250511101834.png' alt="image">
 
 take-survey.heal.htb
 
@@ -116,12 +116,12 @@ pero vamos por parte, ya vamos a trabajar con el, primero podemos agregarlo a nu
 
 voy a probar este generador en la pagina principal
 mirando la solicitud de burpsuite todo son solicitudes a la api, asi que al interceptarlo no veo nada, pero mirando el historial http registrado por burp:
-<img src='/images/writeup-heal/Pasted image 20250511103648.png'>
+<img src='/images/writeup-heal/Pasted image 20250511103648.png' alt="image">
 
 cuando vemos esto, siempre debemos probar si hay inclusión de archivos del servidor
 
 pero estaba bastante ofuscado todo por asi decirlo, me parecia raro que la solicitud de descarga "get" fuera dificil de interceptar, asi que capturando los paquetes antes de que viajaran, lo logre, capture la solicitud get del archivo hacia la api, la modifique y:
-<img src='/images/writeup-heal/Pasted image 20250511111220.png'>
+<img src='/images/writeup-heal/Pasted image 20250511111220.png' alt="image">
 
 no se podría hacer desde options dado el token, además no se podía cambiar el método porque daba un error
 
@@ -130,11 +130,11 @@ mientras probaba esto, descubrí 2 cosas interesantes
 1) la api es ruby rails version 7.1.4 *desactualizada*
 2) take-survey es un software libre llamado LimeSurvey
 
-<img src='/images/writeup-heal/Pasted image 20250511111643.png'>
+<img src='/images/writeup-heal/Pasted image 20250511111643.png' alt="image">
 
 ruby rails versión antigua y desactualizada
 
-<img src='/images/writeup-heal/Pasted image 20250511111726.png'>
+<img src='/images/writeup-heal/Pasted image 20250511111726.png' alt="image">
 limesurvey, el cual expone el nombre de usuario de un administrador **Ralph@heal.htp**
 
 antes de profundizar mas en estos softwares, quiero intentar enumerar el sistema desde el file inclusión, intentar mirar archivos de configuración
@@ -154,7 +154,7 @@ root
 buscare archivos de configuración
 
 intentando varias, vi que el directorio de rails no funcionaba porque el nombre no era correcto asi que fui probando y :
-<img src='/images/writeup-heal/Pasted image 20250511113111.png'>
+<img src='/images/writeup-heal/Pasted image 20250511113111.png' alt="image">
 ```
 # SQLite. Versions 3.8.0 and up are supported.
 #   gem install sqlite3
@@ -214,22 +214,22 @@ vamos a los logins
 
 en el principal:
 
-<img src='/images/writeup-heal/Pasted image 20250511122226.png'>
+<img src='/images/writeup-heal/Pasted image 20250511122226.png' alt="image">
 
 
 en este punto, empezare a buscar sobre los otros subdominios, para ver como podemos aprovechar y que ventajas tendría
 
 mirando un poco la documentación de la herramienta, si ponemos admin en la url, nos va a dirigir al panel de inicio de sesión administrativo:
-<img src='/images/writeup-heal/Pasted image 20250511122713.png'>
+<img src='/images/writeup-heal/Pasted image 20250511122713.png' alt="image">
 
 http://take-survey.heal.htb/index.php/admin/authentication/sa/login
 
 oh! y tambien funcionan aquí las credenciales encontradas:
-<img src='/images/writeup-heal/Pasted image 20250511122829.png'>
+<img src='/images/writeup-heal/Pasted image 20250511122829.png' alt="image">
 
 tenemos una advertencia de seguridad:
 
-<img src='/images/writeup-heal/Pasted image 20250511122933.png'>
+<img src='/images/writeup-heal/Pasted image 20250511122933.png' alt="image">
 
 ## Shell como www-data:
 
@@ -239,7 +239,7 @@ tambien es segunda vez que vemos esa fecha, la cual es bastante desactualizada, 
 
 al parecer es una carga maliciosa de un archivo zip, normalmente este tipo de vulnerabilidades se da en la carga de temas o plantillas y tenemos en la pagina una opción de carga de plugins:
 
-<img src='/images/writeup-heal/Pasted image 20250511124125.png'>
+<img src='/images/writeup-heal/Pasted image 20250511124125.png' alt="image">
 
 necesitamos 2 archivos:
 
@@ -402,16 +402,16 @@ nc -lnvp 443
 
 primero se carga el zip:
 
-<img src='/images/writeup-heal/Pasted image 20250511131113.png'>
+<img src='/images/writeup-heal/Pasted image 20250511131113.png' alt="image">
 
 claro que confiamos plenamente en este archivo :P
 
 vamos a proceder a instalar:
 
-<img src='/images/writeup-heal/Pasted image 20250511131209.png'>
+<img src='/images/writeup-heal/Pasted image 20250511131209.png' alt="image">
 
 y activarlo:
-<img src='/images/writeup-heal/Pasted image 20250511131241.png'>
+<img src='/images/writeup-heal/Pasted image 20250511131241.png' alt="image">
 
 una vez activado vamos a visitar:
 
@@ -420,7 +420,7 @@ una vez activado vamos a visitar:
 
 y tenemos nuestra revshell:
 
-<img src='/images/writeup-heal/Pasted image 20250511131332.png'>
+<img src='/images/writeup-heal/Pasted image 20250511131332.png' alt="image">
 
 mirando los archivos de configuración de la pagina limesurvey en la ruta /var/www/limesurvey/application/config/ (dado que es una ruta típica) 
 
@@ -447,12 +447,12 @@ return array(
 siempre que encontramos credenciales, hay que probarlas contra los usuarios del sistema o contra algún panel
 en el directorio home solo vemos a ralph y ron, y si probamos las creds:
 
-<img src='/images/writeup-heal/Pasted image 20250511134106.png'>
+<img src='/images/writeup-heal/Pasted image 20250511134106.png' alt="image">
 
 funcionan para el usuario ron muy bien y allí esta la flag, por lo que me hace suponer que tambien funcionara el ssh para este usuario
 
 enumerando el sistema, hay muchos puertos abiertos en escucha:
-<img src='/images/writeup-heal/Pasted image 20250511172853.png'>
+<img src='/images/writeup-heal/Pasted image 20250511172853.png' alt="image">
 
 buscando uno por uno, mirando cual tiene contenido, solo 2 de los no cumunes descargaron contenido al intentarme conectar con wget:
 ```
@@ -467,11 +467,11 @@ ssh -L 6969:127.0.0.1:8500 ron@10.129.231.237
 vamos a traer el puerto a nuestro puerto 6969 para poder verlo en la web
 
 si vamos al navegador:
-<img src='/images/writeup-heal/Pasted image 20250511173801.png'>
+<img src='/images/writeup-heal/Pasted image 20250511173801.png' alt="image">
 es un servicio llamado consul ui
 
 vemos que ese programa en la maquina lo esta corriendo el usuario root:
-<img src='/images/writeup-heal/Pasted image 20250511174225.png'>
+<img src='/images/writeup-heal/Pasted image 20250511174225.png' alt="image">
 
 que es hashicorp consul:
 
@@ -502,7 +502,7 @@ curl -X PUT -d '{"ID": "test", "Name": "test"}' http://127.0.0.1:8500/v1/agent/s
 ```
 
 si actualizamos nuestro navegador:
-<img src='/images/writeup-heal/Pasted image 20250511182712.png'>
+<img src='/images/writeup-heal/Pasted image 20250511182712.png' alt="image">
 
 podemos inyectar servicios
 
@@ -527,15 +527,15 @@ nc -lnvp 4443
 
 y nos da la shell como pero se va:
 
-<img src='/images/writeup-heal/Pasted image 20250511184403.png'>
+<img src='/images/writeup-heal/Pasted image 20250511184403.png' alt="image">
 
 así que como la conexión dura 1 min, simplemente cambie la bash a suid:
 
-<img src='/images/writeup-heal/Pasted image 20250511184845.png'>
+<img src='/images/writeup-heal/Pasted image 20250511184845.png' alt="image">
 
 y ya pude convertirme en root con una shell mas estable:
 
-<img src='/images/writeup-heal/Pasted image 20250511184943.png'>
+<img src='/images/writeup-heal/Pasted image 20250511184943.png' alt="image">
 
 ya en el directorio root, vemos los scripts que estaban complicando la maquina haha!
 
@@ -545,4 +545,4 @@ nos vemos en la siguiente maquina!
 
 ## H4ck th3 W0rld
 
-<img src="/images/devil.jpg" style="border-radius:200px; width:100px;">
+<img src="/images/devil.jpg" style="border-radius:200px; width:100px;" alt="image">

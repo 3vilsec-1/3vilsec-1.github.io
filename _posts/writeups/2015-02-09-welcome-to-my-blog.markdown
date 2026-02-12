@@ -3,9 +3,6 @@ title: WhoAmI
 author: 3vilSec
 date:   2025-02-09 
 categories: [Post]
-tags: whoami
-render_with_liquid: false
-
 ---
 halloo!, este es el primer post en mi blog
 

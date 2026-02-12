@@ -3,7 +3,6 @@ layout: post
 title:  "Writeup Cat"
 date:   2025-07-05
 categories: [Writeup, HackTheBox]
-tags: linux
 image: /images/writeup-cat/Pasted image 20250512223215.png
 ---
 

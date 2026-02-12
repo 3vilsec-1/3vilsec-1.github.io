@@ -3,7 +3,6 @@ layout: post
 title:  "Writeup Yummy"
 date:   2025-04-19 
 categories: [Writeup, HackTheBox]
-tags: linux
 image:
     path: /images/writeup-yummy/1.png
 ---

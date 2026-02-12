@@ -3,7 +3,6 @@ layout: post
 title:  "Writeup Backfire"
 date:   2025-06-07
 categories: [Writeup, HackTheBox]
-tags: linux
 image: /images/writeup-backfire/Pasted image 20250512070449.png
 ---
 

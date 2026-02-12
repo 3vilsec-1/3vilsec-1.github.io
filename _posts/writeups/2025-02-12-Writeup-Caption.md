@@ -2,7 +2,6 @@
 title: Writeup Caption
 date:   2025-02-11
 categories: [Writeup, HackTheBox]
-tags: linux
 image:
   path: /images/writeup-caption/1.png
 ---

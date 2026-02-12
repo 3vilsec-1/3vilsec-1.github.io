@@ -128,7 +128,7 @@ pwa:
 paginate: 10
 
 # The base URL of your site
-baseurl: "3vilsec.com"
+baseurl: "https://www.3vilsec.com"
 
 # ------------ The following options are not recommended to be modified ------------------
 

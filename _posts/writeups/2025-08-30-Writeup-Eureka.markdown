@@ -3,7 +3,7 @@ layout: post
 title:  "Writeup Eureka"
 date:   2025-08-30
 categories: [Writeup, HackTheBox]
-tags: [linux]
+tags: linux
 image: /images/writeup-eureka/Pasted image 20250704002743.png
 ---
 

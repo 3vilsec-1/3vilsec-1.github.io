@@ -2,8 +2,8 @@
 layout: post
 title:  "Writeup Titanic"
 date:   2025-06-21
-categories: Writeup HackTheBox
-tags: Linux Facil
+categories: [Writeup, HackTheBox]
+tags: [Linux, Facil]
 image: /images/writeup-titanic/Pasted image 20250430233146.png
 ---
 

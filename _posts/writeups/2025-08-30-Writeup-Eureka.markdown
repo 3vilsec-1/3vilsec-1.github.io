@@ -2,8 +2,8 @@
 layout: post
 title:  "Writeup Eureka"
 date:   2025-08-30
-categories: Writeup HackTheBox
-tags: Linux Dificil
+categories: [Writeup, HackTheBox]
+tags: [Linux, Dificil]
 image: /images/writeup-eureka/Pasted image 20250704002743.png
 ---
 

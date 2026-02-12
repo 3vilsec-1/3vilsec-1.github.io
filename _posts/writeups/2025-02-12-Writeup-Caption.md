@@ -1,8 +1,8 @@
 ---
 title: Writeup Caption
 date:   2025-02-11
-categories: Writeup HackTheBox
-tags: Linux Dificil
+categories: [Writeup, HackTheBox]
+tags: [Linux, Dificil]
 image:
   path: /images/writeup-caption/1.png
 ---

@@ -3,7 +3,7 @@ title: WhoAmI
 author: 3vilSec
 date:   2025-02-09 
 categories: Post
-tags: whoami
+tags: [whoami]
 render_with_liquid: false
 
 ---

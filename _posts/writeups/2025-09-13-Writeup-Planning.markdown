@@ -3,7 +3,9 @@ layout: post
 title:  "Writeup Planning"
 date:   2025-09-13
 categories: [Writeup, HackTheBox]
-image: /images/writeup-planning/1.png
+tags: linux
+image: 
+    path: /images/writeup-planning/1.png
 
 ---
 

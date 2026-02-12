@@ -3,7 +3,9 @@ layout: post
 title:  "Writeup EscapeTwo"
 date:   2025-05-24
 categories: [Writeup, HackTheBox]
-image: /images/writeup-escapetwo/Pasted image 20250504120305.png
+tags: windows
+image: 
+    path: /images/writeup-escapetwo/Pasted image 20250504120305.png
 ---
 
 ***Dificultad: Media***

@@ -2,7 +2,9 @@
 title:  Writeup Lantern
 date:   2025-04-10 
 categories: [Writeup, HackTheBox]
-image: /images/writeup-lantern/1.png
+tags: linux
+image: 
+	path: /images/writeup-lantern/1.png
 ---
 
 ***Dificultad: Dificil***

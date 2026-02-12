@@ -3,7 +3,9 @@ layout: post
 title:  "Writeup Cat"
 date:   2025-07-05
 categories: [Writeup, HackTheBox]
-image: /images/writeup-cat/Pasted image 20250512223215.png
+tags: linux
+image: 
+    path: /images/writeup-cat/Pasted image 20250512223215.png
 ---
 
 ***Dificultad: Media***

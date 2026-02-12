@@ -3,7 +3,7 @@ layout: post
 title:  "Writeup Blazorized"
 date:   2025-03-01 
 categories: [Writeup, HackTheBox]
-tags: [Windows]
+tags: [windows]
 image: 
     path: /images/writeup-blazorized/1.png.png
 ---

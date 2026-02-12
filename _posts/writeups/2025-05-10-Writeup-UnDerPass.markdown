@@ -3,7 +3,7 @@ layout: post
 title:  "Writeup Underpass"
 date:   2025-05-10 
 categories: [Writeup, HackTheBox]
-tags: [Linux]
+tags: [linux]
 image: /images/Writeup-underpass/Pasted image 20250503204027.png
 ---
 

@@ -1,15 +1,20 @@
 ---
-title:  Writeup Lantern
+layout: post
+title:  "Writeup Lantern"
 date:   2025-04-10 
 categories: [Writeup, HackTheBox]
 tags: linux
-image: 
-	path: /images/writeup-lantern/1.png
+image:
+    path: /images/writeup-lantern/1.png
 ---
+
+
 
 ***Dificultad: Dificil***
 
 ***Sistema Operativo: Linux***
+
+
 
 holaa! que gusto que estemos aquí de nuevo (despues de mucho tiempo) con otra maquina de dificultad difícil para seguir mejorando cada día.
 

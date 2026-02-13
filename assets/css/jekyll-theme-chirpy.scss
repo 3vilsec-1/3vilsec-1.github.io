@@ -1,15 +1,11 @@
 ---
 ---
 
-@import "main";
+/* prettier-ignore */
+@use 'main
+{%- if jekyll.environment == 'production' -%}
+  .bundle
+{%- endif -%}
+';
 
-
-.layout-post .preview-img {
-  display: none !important;
-}
-
-
-
-.post .preview-img {
-  display: none !important;
-}
+/* append your custom style below */

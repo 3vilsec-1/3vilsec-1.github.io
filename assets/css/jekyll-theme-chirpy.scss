@@ -9,27 +9,3 @@
 ';
 
 /* append your custom style below */
-/* Evita zoom y recorte de la imagen hero dentro de posts */
-.layout-post .mt-3.mb-3 a.popup.img-link.preview-img,
-.layout-post .mt-3.mb-3 a.popup.img-link.preview-img img {
-  width: auto !important;        /* ancho natural */
-  max-width: 100% !important;    /* no se desborde del contenedor */
-  height: auto !important;       /* altura proporcional */
-  object-fit: contain !important; /* evita recorte */
-  display: inline-block !important;
-}
-
-/* Opcional: quitar efecto de lightbox */
-.layout-post .mt-3.mb-3 a.popup.img-link.preview-img {
-  cursor: default !important;
-  pointer-events: none !important;
-}
-
-.layout-post .mt-3.mb-3 a.popup.img-link.preview-img{
-  cursor:default !important;
-  pointer-events:none !important;
-}
-
-:hover{
-  color: red;
-}

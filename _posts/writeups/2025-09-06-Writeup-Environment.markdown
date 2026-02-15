@@ -3,7 +3,7 @@ layout: post
 title:  "Writeup Environment"
 date:   2025-09-06
 categories: [Writeup, HackTheBox]
-tags: linux
+tags: [linux, media]
 image:
     path: /images/writeup-environment/Pasted image 20250906102501.png
 ---

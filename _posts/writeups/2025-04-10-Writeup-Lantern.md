@@ -3,7 +3,7 @@ layout: post
 title:  "Writeup Lantern"
 date:   2025-04-10 
 categories: [Writeup, HackTheBox]
-tags: linux
+tags: [linux, dificil]
 image:
     path: /images/writeup-lantern/1.png
 ---

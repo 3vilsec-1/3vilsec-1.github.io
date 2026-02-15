@@ -3,7 +3,7 @@ layout: post
 title:  "Writeup Planning"
 date:   2025-09-13
 categories: [Writeup, HackTheBox]
-tags: linux
+tags: [linux, facil]
 image: 
     path: /images/writeup-planning/1.png
 

@@ -3,7 +3,7 @@ layout: post
 title:  "Writeup Heal"
 date:   2025-05-17 
 categories: [Writeup, HackTheBox]
-tags: linux
+tags: [linux, media]
 image: 
   path: /images/writeup-heal/Pasted image 20250510203459.png
 ---
